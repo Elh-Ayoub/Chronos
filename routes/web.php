@@ -14,13 +14,15 @@ use App\Http\Controllers\VerifyEmailController;
 |
 */
  //////////////////// ----------Authentication module----------  ////////////////////
+ Route::get('/home', function () {
+    return view('home');
+})->name('dashboard');
 Route::group([
     'middleware' => 'AuthCheck',
 ], function () {
     Route::get('/', function () {
-        return view('welcome');
-    })->name('dashboard');
-
+        return redirect('dashboard');
+    });
     Route::post('auth/login', [AuthController::class, 'login'])->name('auth.login');
     Route::get('auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
     Route::post('auth/register', [AuthController::class, 'register'])->name('auth.register');
