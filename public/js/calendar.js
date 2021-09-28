@@ -58,9 +58,9 @@ $(function () {
 
     var calendar = new Calendar(calendarEl, {
       headerToolbar: {
-        left  : 'prev,next today',
+        left  : 'prevYear prev,next today',
         center: 'title',
-        right : 'dayGridMonth,timeGridWeek,timeGridDay'
+        right : 'dayGridMonth,timeGridWeek,timeGridDay nextYear'
       },
       themeSystem: 'bootstrap',
       //Random default events
