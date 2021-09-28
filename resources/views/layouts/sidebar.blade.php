@@ -33,8 +33,8 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="" class="nav-link">
-                    <i class="fa fa-user"></i>
+                <a href="{{route('user.calendars')}}" class="nav-link">
+                    <i class="far fa-calendar-alt"></i>
                     <p>My Calendars</p>
                 </a>
             </li>

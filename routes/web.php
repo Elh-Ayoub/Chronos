@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VerifyEmailController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CalendarController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -60,12 +61,18 @@ Route::group([
     })->middleware('guest')->name('password.reset');
     Route::patch('auth/reset-password', [AuthController::class, 'resetPassword'])->middleware('guest')->name('password.update');
     Route::post('auth/forgot-password',[AuthController::class, 'sendResetLink'])->middleware('guest')->name('password.send');
-//////////////////// ----------Authenticated user----------  ////////////////////  
+});
+Route::group([
+    'middleware' => 'AuthCheck',
+], function () {
+    //////////////////// ----------Authenticated user----------  ///////////////
     Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');  
     Route::patch('profile/update/{id}', [UserController::class, 'update'])->name('user.update');
     Route::patch('password/update/', [UserController::class, 'UpdatePassword'])->name('user.password.update');
     Route::patch('avatar/update', [UserController::class, 'UpdateAvatar'])->name('user.avatar.update');
-    Route::delete('avatar/delete', [UserController::class, 'setDefaultAvatar'])->name('user.avatar.delete');
+    Route::delete('avatar/delete', [UserController::class, 'setDefaultAvatar'])->name('user.avatar.delete');    
     Route::delete('user/delete', [UserController::class, 'destroyAuthUser'])->name('user.delete');
-
+    //////////////////// ----------Calendar user----------  ////////////////////
+    Route::get('/calendars', [CalendarController::class, 'index'])->name('user.calendars');
+    Route::post('/calendars', [CalendarController::class, 'store'])->name('calendars.create');
 });

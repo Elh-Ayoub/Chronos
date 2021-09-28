@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Calendar;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Hash;
@@ -51,6 +52,11 @@ class AuthController extends Controller
         ));
         event(new Registered($user));
         if($user){
+            Calendar::create([
+                'name' => 'Main Calendar',
+                'description' => "This is the main and default calendar.",
+                "user_id" => $user->id,
+            ]);
             return back()->with('success', 'Account created successfully. Please check mailbox to verify email.');
         }else{
             return back()->with('fail', ['error' => 'Somthing went wrong! Try again.']);

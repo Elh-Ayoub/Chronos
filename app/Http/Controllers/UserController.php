@@ -63,8 +63,6 @@ class UserController extends Controller
             $fileName = str_replace(' ', '-', $user->username) . '.png';
             $image = $request->file('image')->store('public');
             $image1 = $request->file('image')->move(public_path('/profile-pictures'), $fileName);
-            //$user->profile_photo  = url('/profile-pictures/' . $fileName);
-            //DB::update('update users set profile_photo = ? where id = ?', [url('/profile-pictures/' . $fileName), $user->id]);
             $user->update(['profile_photo' => url('/profile-pictures/' . $fileName)]);
             return  back()->with('success', 'Profile picture updated successfully!');
         }
@@ -96,7 +94,6 @@ class UserController extends Controller
         $name = substr($user->username, 0, 2);
         File::delete(public_path(parse_url($user->profile_photo, PHP_URL_PATH)));
         $profile_photo = 'https://ui-avatars.com//api//?name='.$name.'&color=7F9CF5&background=EBF4FF';
-        //DB::update('update users set profile_photo = ? where id = ?', [$profile_photo , $user->id]);
         $user->update(['profile_photo' => $profile_photo]);
         return back()->with('success', 'Profile picture deleted!');
     }
