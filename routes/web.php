@@ -5,6 +5,11 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VerifyEmailController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\EventController;
+use App\Models\Calendar;
+use App\Models\Event;
+use Illuminate\Support\Facades\Auth;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,7 +22,8 @@ use App\Http\Controllers\CalendarController;
 */
  //////////////////// ----------Authentication module----------  ////////////////////
  Route::get('/home', function () {
-    return view('home');
+     $mainCal = Calendar::where(['user_id' => Auth::id(), 'name' => "Main Calendar"])->first();
+    return view('home', ['calendar' => $mainCal,'events' =>Event::where(['user_id' => Auth::id(), 'calendar_id' => $mainCal->id])->get()]);
 })->name('dashboard');
 Route::group([
     'middleware' => 'AuthCheck',
@@ -72,7 +78,11 @@ Route::group([
     Route::patch('avatar/update', [UserController::class, 'UpdateAvatar'])->name('user.avatar.update');
     Route::delete('avatar/delete', [UserController::class, 'setDefaultAvatar'])->name('user.avatar.delete');    
     Route::delete('user/delete', [UserController::class, 'destroyAuthUser'])->name('user.delete');
-    //////////////////// ----------Calendar user----------  ////////////////////
+    //////////////////// ----------Calendar module----------  ////////////////////
     Route::get('/calendars', [CalendarController::class, 'index'])->name('user.calendars');
     Route::post('/calendars', [CalendarController::class, 'store'])->name('calendars.create');
+
+    //////////////////// ----------Events module----------  ////////////////////
+    Route::get('/events', [EventController::class, 'index'])->name('user.events');
+    Route::post('/events', [EventController::class, 'store'])->name('events.create');
 });

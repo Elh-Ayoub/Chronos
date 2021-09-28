@@ -32,6 +32,23 @@
                     </ol>
                 </div>
                 </div>
+                @if(Session::get('success'))
+                    <div class="alert alert-success col-sm-3 ml-2 text-center" role="alert">
+                        {{Session::get('success')}}
+                    </div>
+                @endif
+                @if(Session::get('fail'))
+                    <div class="alert alert-danger col-sm-3 ml-1" role="alert">
+                        {{Session::get('fail')}}
+                    </div>
+                @endif
+                @if(Session::get('fail-arr'))
+                    <div class="alert alert-danger col-sm-3 ml-1" role="alert">
+                        @foreach(Session::get('fail-arr') as $key => $err)
+                        <p>{{$key . ': ' . $err[0]}}</p>
+                        @endforeach
+                    </div>
+                @endif
             </div>
         </div>
         <section class="content">
@@ -83,21 +100,107 @@
                                 <button id="add-new-event" type="button" class="btn btn-primary">Add</button>
                                 </div>
                             </div>
+                            <button class="btn btn-primary mt-2" data-toggle="modal" data-target="#modal-create-event"><i class="fas fa-plus"></i>Create event</button>
                             </div>
                         </div>
                     </div>
                 </div>
-                    <div class="col-md-9">
-                        <div class="card card-primary">
-                        <div class="card-body p-0">
-                            <!-- THE CALENDAR -->
-                            <div id="calendar"></div>
-                        </div>
-                        </div>
+                <div class="col-md-9">
+                    <div class="card card-primary">
+                    <div class="card-body p-0">
+                        <!-- THE CALENDAR -->
+                        <div id="calendar" data-events="{{json_encode($events)}}"></div>
                     </div>
+                    </div>
+                </div>
                 </div>
             </div>
         </section>
+        <div class="modal fade" id="modal-create-event">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Create event</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{{route('events.create', ['calendar_id' => $calendar->id])}}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="title">Title</label>
+                            <input type="text" id="title" name="title" class="form-control" maxlength="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea id="description" name="description" class="form-control" maxlength="200"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="start">Start date</label>
+                            <input type="datetime-local" id="start" name="start" class="form-control" maxlength="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="end">End date</label>
+                            <input type="datetime-local" id="end" name="end" class="form-control" maxlength="100">
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputbackgroundColor" class="col-sm-2 col-form-label">Background color</label>
+                            <div id="inputbackgroundColor" name="backgroundColor" class="form-control">
+                                <label for="blue" class="text-primary">Blue</label>
+                                <input type="radio" id="blue" name="backgroundColor" value="#0073b7">
+                                <label for="yellow" class="text-warning">Yellow</label>
+                                <input type="radio" id="yellow" name="backgroundColor" value="#f39c12">
+                                <label for="green" class="text-success">Green</label>
+                                <input type="radio" id="green" name="backgroundColor" value="#00a65a">
+                                <label for="red" class="text-danger">Red</label>
+                                <input type="radio" id="red" name="backgroundColor" value="#f56954">
+                                <label for="aqua" class="text-info">Aqua</label>
+                                <input type="radio" id="aqua" name="backgroundColor" value="#00c0ef">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputborderColor" class="col-sm-2 col-form-label">Border Color</label>
+                            <div id="inputborderColor" name="borderColor" class="form-control">
+                                <label for="blue" class="text-primary">Blue</label>
+                                <input type="radio" id="blue" name="borderColor" value="#0073b7">
+                                <label for="yellow" class="text-warning">Yellow</label>
+                                <input type="radio" id="yellow" name="borderColor" value="#f39c12">
+                                <label for="green" class="text-success">Green</label>
+                                <input type="radio" id="green" name="borderColor" value="#00a65a">
+                                <label for="red" class="text-danger">Red</label>
+                                <input type="radio" id="red" name="borderColor" value="#f56954">
+                                <label for="aqua" class="text-info">Aqua</label>
+                                <input type="radio" id="aqua" name="borderColor" value="#00c0ef">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                        <label for="inputallDay" class="col-sm-2 col-form-label">All day event</label>
+                            <div class="col-sm-10">
+                                <select id="inputallDay" name="allDay" class="form-control custom-select">
+                                    <option selected disabled>Select one</option>
+                                    <option><span class="text-primary"><i class="fas fa-square"></i></span>true</option>
+                                    <option><span class="text-warning"><i class="fas fa-square"></i></span>false</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <input type="text" id="category" name="category" class="form-control" maxlength="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="url">include URL</label>
+                            <input type="text" id="url" name="url" class="form-control" maxlength="100">
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
     </div>
   @include('layouts.footer')
 </div>
