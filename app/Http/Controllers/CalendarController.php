@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Calendar;
+use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -49,13 +50,17 @@ class CalendarController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\Models\Calendar  $calendar
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Calendar $calendar)
+    public function show($id)
     {
-        //
+        $cal = Calendar::find($id);
+        if(!$cal || $cal->user_id !== Auth::id()){
+            return back()->with('fail', 'Calendar not exist or not yours');
+        }else{
+           return view('home', ['calendar' =>  $cal, 'events' => Event::where(['user_id' => Auth::id(), 'calendar_id' => $cal->id])->get()]); 
+        }
     }
 
     /**

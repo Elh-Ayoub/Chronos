@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Auth;
 */
  //////////////////// ----------Authentication module----------  ////////////////////
  Route::get('/home', function () {
-     $mainCal = Calendar::where(['user_id' => Auth::id(), 'name' => "Main Calendar"])->first();
+    $mainCal = Calendar::where(['user_id' => Auth::id(), 'name' => "Main Calendar"])->first();
     return view('home', ['calendar' => $mainCal,'events' =>Event::where(['user_id' => Auth::id(), 'calendar_id' => $mainCal->id])->get()]);
 })->name('dashboard');
 Route::group([
@@ -80,9 +80,13 @@ Route::group([
     Route::delete('user/delete', [UserController::class, 'destroyAuthUser'])->name('user.delete');
     //////////////////// ----------Calendar module----------  ////////////////////
     Route::get('/calendars', [CalendarController::class, 'index'])->name('user.calendars');
+    Route::get('/calendars/{id}', [CalendarController::class, 'show'])->name('user.calendars.show');
     Route::post('/calendars', [CalendarController::class, 'store'])->name('calendars.create');
 
     //////////////////// ----------Events module----------  ////////////////////
     Route::get('/events', [EventController::class, 'index'])->name('user.events');
+    Route::get('/calendars/{id}/events/create', [EventController::class, 'create'])->name('events.create.view');
+    Route::get('/calendars/{cal_id}/events/edit/{ev_id}', [EventController::class, 'edit'])->name('events.edit.view');
     Route::post('/events', [EventController::class, 'store'])->name('events.create');
+    Route::patch('/events/{id}', [EventController::class, 'update'])->name('events.update');
 });

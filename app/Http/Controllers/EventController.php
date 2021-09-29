@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Calendar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -24,9 +25,14 @@ class EventController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($id)
     {
-        //
+        $cal = Calendar::find($id);
+        if(!$cal || $cal->user_id !== Auth::id()){
+            return back()->with('fail', 'Calendar not exist or not yours');
+        }else{
+             return view('Events.create', ['calendar' => $cal]);
+        }
     }
 
     /**
@@ -38,9 +44,9 @@ class EventController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required|string|between:5,30',
+            'title' => 'required|string',
             'description' => 'max:500',
-            'start' => 'required|string|between:5,30',
+            'start' => 'required|string',
             'backgroundColor' =>'required|string',
             'borderColor' =>'required|string',
         ]);
@@ -52,15 +58,15 @@ class EventController extends Controller
             'description' => $request->description,
             'start' => date('D M d Y H:i:s', strtotime($request->start)),
             'end' => date('D M d Y H:i:s', strtotime($request->end)),
-            'allDay' => $request->allDay,
+            'allDay' => $request->allDay  == 'true'? ('true') : (null),
             'category' => $request->category,
             'backgroundColor' => $request->backgroundColor,
             'borderColor' => $request->borderColor,
-            'url' => $request->url,
             'calendar_id' => $request->calendar_id,
             'user_id' => Auth::id(),
         ]);
         if($event){
+            $event->update(['url' => url(url('/calendars/'. $request->calendar_id .'/events/edit/'. $event->id))]);
             return back()->with('success', 'Event created successfully!');
         }else{
             return back()->with('fail', 'Something went wrong. Try again!');
@@ -81,24 +87,45 @@ class EventController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Event  $event
+     * @param int $cal_id Calendar id
+     * * @param int $ev_id Event id, 
      * @return \Illuminate\Http\Response
      */
-    public function edit(Event $event)
+    public function edit($cal_id, $ev_id)
     {
-        //
+        $cal = Calendar::find($cal_id);
+        if(!$cal || $cal->user_id !== Auth::id()){
+            return back()->with('fail', 'Calendar not exist or not yours');
+        }else{
+             return view('Events.edit', ['calendar' => $cal, 'event' => Event::find($ev_id)]);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Event  $event
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Event $event)
+    public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string',
+            'description' => 'max:500',
+            'start' => 'required|string',
+            'backgroundColor' =>'required|string',
+            'borderColor' =>'required|string',
+        ]);
+        $event = Event::find($id);
+        if(!$event){
+            return back()->with('fail', 'Event not found!');
+        }
+        if($validator->fails()){
+            return back()->with('fail-arr', json_decode($validator->errors()->toJson()));
+        }
+        $event->update(array_merge($request->all(), ['allDay' => ($request->allDay  == 'true') ? ('true') : (null)]));
+        return back()->with('success', 'Event Updated successfully!');
     }
 
     /**
