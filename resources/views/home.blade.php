@@ -10,7 +10,7 @@
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="{{asset('plugins/fontawesome-free/css/all.min.css')}}">
   <link rel="stylesheet" href="{{asset('plugins/fullcalendar/main.css')}}">
-  <link rel="stylesheet" href="{{asset('plugins/fontawesome-free/css/all.min.css')}}">
+  <link rel="stylesheet" href="{{asset('plugins/icheck-bootstrap/icheck-bootstrap.min.css')}}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{asset('dist/css/adminlte.min.css')}}">
   <link rel="shortcut icon" type="image/x-icon" href="{{ asset('images/logo_transparent.png')}}"/>
@@ -59,27 +59,23 @@
                     <div class="sticky-top mb-3">
                         <div class="card">
                             <div class="card-header">
-                            <h4 class="card-title">Draggable Events</h4>
+                            <h4 class="card-title">Today Events</h4>
                             </div>
                             <div class="card-body">
-                            <!-- the events -->
-                            <div id="external-events">
-                                <div class="external-event bg-success">Lunch</div>
-                                <div class="external-event bg-warning">Go home</div>
-                                <div class="external-event bg-info">Do homework</div>
-                                <div class="external-event bg-primary">Work on UI design</div>
-                                <div class="external-event bg-danger">Sleep tight</div>
-                                <div class="checkbox">
-                                <label for="drop-remove">
-                                    <input type="checkbox" id="drop-remove">
-                                    remove after drop
-                                </label>
-                                </div>
+                                <ul class="todo-list" data-widget="todo-list">
+                                    @foreach ($today_events as $t_ev)
+                                    <li>
+                                      <div  class="icheck-primary d-inline ml-2">
+                                        <input type="checkbox" id="{{$t_ev->title}}">
+                                        <label for="{{$t_ev->title}}"></label>
+                                      </div>
+                                      <span class="text">{{$t_ev->title}}</span>
+                                      <small class="badge text-white" style="background: {{$t_ev->backgroundColor}}; border: 2px solid {{$t_ev->borderColor}};"><i class="far fa-clock"></i>{{($hours = floor(abs(strtotime($t_ev->end) - strtotime('+1 hour')) / (60*60))) != 0 ? ($hours."h ") : ("")  . (floor(abs(strtotime($t_ev->end) - strtotime('+1 hour')) / (60))-($hours * 60)) . "min"}} @if(strtotime($t_ev->end) - strtotime('+1 hour') < 0) ago @else  remaining @endif</small>
+                                    </li>
+                                    @endforeach
+                                </ul>
                             </div>
-                            </div>
-                            <!-- /.card-body -->
                         </div>
-                        <!-- /.card -->
                         <div class="card">
                             <div class="card-header">
                             <h3 class="card-title">Create Event</h3>

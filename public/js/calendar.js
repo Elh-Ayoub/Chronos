@@ -37,9 +37,10 @@ $(function () {
     var Calendar = FullCalendar.Calendar;
     var Draggable = FullCalendar.Draggable;
 
-    var containerEl = document.getElementById('external-events');
-    var checkbox = document.getElementById('drop-remove');
+    //var containerEl = document.getElementById('external-events');
+    //var checkbox = document.getElementById('drop-remove');
     var calendarEl = document.getElementById('calendar');
+    var calendarEl2 = document.getElementById('calendar-2');
     var events = $('#calendar').data('events');
     // events.foreach((event)=>{
       
@@ -55,17 +56,17 @@ $(function () {
     // initialize the external events
     // -----------------------------------------------------------------
 
-    new Draggable(containerEl, {
-      itemSelector: '.external-event',
-      eventData: function(eventEl) {
-        return {
-          title: eventEl.innerText,
-          backgroundColor: window.getComputedStyle( eventEl ,null).getPropertyValue('background-color'),
-          borderColor: window.getComputedStyle( eventEl ,null).getPropertyValue('background-color'),
-          textColor: window.getComputedStyle( eventEl ,null).getPropertyValue('color'),
-        };
-      }
-    });
+    // new Draggable(containerEl, {
+    //   itemSelector: '.external-event',
+    //   eventData: function(eventEl) {
+    //     return {
+    //       title: eventEl.innerText,
+    //       backgroundColor: window.getComputedStyle( eventEl ,null).getPropertyValue('background-color'),
+    //       borderColor: window.getComputedStyle( eventEl ,null).getPropertyValue('background-color'),
+    //       textColor: window.getComputedStyle( eventEl ,null).getPropertyValue('color'),
+    //     };
+    //   }
+    // });
 
     var calendar = new Calendar(calendarEl, {
       headerToolbar: {
@@ -80,25 +81,21 @@ $(function () {
         events
         
       ,
-      editable  : true,
-      droppable : true, // this allows things to be dropped onto the calendar !!!
-      drop      : function(info) {
-        // is the "remove after drop" checkbox checked?
-        if (checkbox.checked) {
-          // if so, remove the element from the "Draggable Events" list
-          info.draggedEl.parentNode.removeChild(info.draggedEl);
-        }
-      },
+      editable  : false,
+      droppable : false, // this allows things to be dropped onto the calendar !!!
+      weekNumbers: true,
+      weekNumberCalculation: 'ISO',
       nowIndicator: true,
       dateClick: function(info) {
         $('#create-event-modal').modal('show');
-        $('#start').val( info.dateStr + "T" + date.getHours() +':'+ date.getMinutes());
+        var date = new Date(Date.parse(info.dateStr))
+      //   console.log(curdate);
+      //  $('#start').val(info.dateStr);
       }
     });
 
     calendar.render();
     // $('#calendar').fullCalendar()
-
     /* ADDING EVENTS */
     var currColor = '#3c8dbc' //Red by default
     // Color chooser button

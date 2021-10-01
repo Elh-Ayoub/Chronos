@@ -124,7 +124,10 @@ class EventController extends Controller
         if($validator->fails()){
             return back()->with('fail-arr', json_decode($validator->errors()->toJson()));
         }
-        $event->update(array_merge($request->all(), ['allDay' => ($request->allDay  == 'true') ? ('true') : (null)]));
+        $event->update(array_merge($request->all(), [
+            'start' => date('D M d Y H:i:s', strtotime($request->start)),
+            'end' => date('D M d Y H:i:s', strtotime($request->end)),
+            'allDay' => ($request->allDay  == 'true') ? ('true') : (null)]));
         return back()->with('success', 'Event Updated successfully!');
     }
 

@@ -59,7 +59,8 @@ class CalendarController extends Controller
         if(!$cal || $cal->user_id !== Auth::id()){
             return back()->with('fail', 'Calendar not exist or not yours');
         }else{
-           return view('home', ['calendar' =>  $cal, 'events' => Event::where(['user_id' => Auth::id(), 'calendar_id' => $cal->id])->get()]); 
+            $today_events = Event::where('start', 'LIKE', '%'. date('D M d Y') .'%')->get();
+            return view('home', ['calendar' =>  $cal, 'events' => Event::where(['user_id' => Auth::id(), 'calendar_id' => $cal->id])->get(), 'today_events' => $today_events]); 
         }
     }
 
