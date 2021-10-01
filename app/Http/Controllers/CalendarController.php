@@ -89,11 +89,17 @@ class CalendarController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Calendar  $calendar
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Calendar $calendar)
+    public function destroy($id)
     {
-        //
+        $calendar = Calendar::find($id);
+        if($calendar && $calendar->user_id == Auth::id()){
+            Calendar::destroy($id);
+            return redirect('/home');
+        }else{
+            return back()->with('fail', 'Calendar not exist or not yours');
+        }
     }
 }

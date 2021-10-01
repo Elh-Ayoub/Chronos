@@ -50,7 +50,7 @@ $(function () {
         event.end = new Date(Date.parse(event.end))
       }
    });
-    console.log(events)
+    //console.log(events)
     // events = JSON.parse(events);
     // initialize the external events
     // -----------------------------------------------------------------
@@ -88,6 +88,11 @@ $(function () {
           // if so, remove the element from the "Draggable Events" list
           info.draggedEl.parentNode.removeChild(info.draggedEl);
         }
+      },
+      nowIndicator: true,
+      dateClick: function(info) {
+        $('#create-event-modal').modal('show');
+        $('#start').val( info.dateStr + "T" + date.getHours() +':'+ date.getMinutes());
       }
     });
 

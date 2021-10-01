@@ -29,7 +29,7 @@ Route::group([
     'middleware' => 'AuthCheck',
 ], function () {
     Route::get('/', function () {
-        return redirect('dashboard');
+        return redirect('/home');
     });
     Route::post('auth/login', [AuthController::class, 'login'])->name('auth.login');
     Route::get('auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
@@ -82,6 +82,7 @@ Route::group([
     Route::get('/calendars', [CalendarController::class, 'index'])->name('user.calendars');
     Route::get('/calendars/{id}', [CalendarController::class, 'show'])->name('user.calendars.show');
     Route::post('/calendars', [CalendarController::class, 'store'])->name('calendars.create');
+    Route::delete('/calendars/{id}', [CalendarController::class, 'destroy'])->name('calendars.delete');
 
     //////////////////// ----------Events module----------  ////////////////////
     Route::get('/events', [EventController::class, 'index'])->name('user.events');

@@ -14,6 +14,7 @@
   <!-- Theme style -->
   <link rel="stylesheet" href="{{asset('dist/css/adminlte.min.css')}}">
   <link rel="shortcut icon" type="image/x-icon" href="{{ asset('images/logo_transparent.png')}}"/>
+  <style>.color-select:checked + label{ background-color: rgb(124, 124, 124); border-radius: 10px;}</style>
 </head>
 <body class="hold-transition sidebar-collapse layout-top-nav">
 <div class="wrapper">
@@ -102,6 +103,9 @@
                             </div>
                             <a class="btn btn-primary mt-2" href="{{route('events.create.view', $calendar->id)}}"><i class="fas fa-plus"></i>Create event</a>
                             </div>
+                            @if($calendar->name !== 'Main Calendar')
+                            <button class="btn btn-danger" data-toggle="modal" data-target="#delete-calendar">Delete calendar</button>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -116,6 +120,45 @@
                 </div>
             </div>
         </section>
+        <div id="create-event-modal" class="modal fade">
+            <div class="modal-dialog modal-lg">
+                <form action="{{route('events.create', ['calendar_id' => $calendar->id])}}" method="POST" class="modal-content">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title">Modal Title</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        @include('layouts.eventForm', ['event' => NULL])
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="delete-calendar" class="modal fade">
+            <div class="modal-dialog">
+                <form action="{{route('calendars.delete', $calendar->id)}}" method="POST" class="modal-content bg-danger">
+                    @csrf
+                    @method('DELETE')
+                    <div class="modal-header">
+                        <h4 class="modal-title">Delete {{$calendar->name}}</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>You're about to delete a Calendar. Are you sure ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-outline-light">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
   @include('layouts.footer')
 </div>

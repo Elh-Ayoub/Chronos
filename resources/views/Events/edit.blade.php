@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My Calendars - {{env('APP_NAME')}}</title>
+  <title>Edit event - {{env('APP_NAME')}}</title>
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome Icons -->
@@ -30,7 +30,7 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Home</a></li>
-                    <li class="breadcrumb-item"><a href="#">{{$calendar->name}}</a></li>
+                    <li class="breadcrumb-item"><a href="{{route('user.calendars.show', $calendar->id)}}">{{$calendar->name}}</a></li>
                     <li class="breadcrumb-item"><a href="#">create event</a></li>
                     </ol>
                 </div>
@@ -70,7 +70,7 @@
                     <div class="card-body">
                         @include('layouts.eventForm', ['event' => $event])
                         <div class="row justify-content-around bg-gray-light pt-2 pb-2 pr-0 pl-0 m-0 w-100">
-                            <a type="button" class="btn btn-default mt-1 mb-1">Cancel</a>
+                            <a type="button" href="{{route('user.calendars.show', $calendar->id)}}" class="btn btn-default mt-1 mb-1">Cancel</a>
                             <button type="submit" class="btn btn-warning mt-1 mb-1">Save</button>
                         </div>
                     </div>
