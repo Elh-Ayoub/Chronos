@@ -23,8 +23,7 @@ use Illuminate\Support\Facades\Auth;
  //////////////////// ----------Authentication module----------  ////////////////////
  Route::get('/home', function () {
     $mainCal = Calendar::where(['user_id' => Auth::id(), 'name' => "Main Calendar"])->first();
-    $today_events = Event::where('start', 'LIKE', '%'. date('D M d Y') .'%')->get();
-    return view('home', ['calendar' => $mainCal,'events' =>Event::where(['user_id' => Auth::id(), 'calendar_id' => $mainCal->id])->get(), 'today_events' => $today_events]);
+    return view('home', ['calendar' => $mainCal,'events' =>Event::where(['user_id' => Auth::id(), 'calendar_id' => $mainCal->id])->get()]);
 })->name('dashboard');
 Route::group([
     'middleware' => 'AuthCheck',

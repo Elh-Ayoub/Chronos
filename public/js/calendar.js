@@ -29,72 +29,62 @@ $(function () {
     /* initialize the calendar
      -----------------------------------------------------------------*/
     //Date for the calendar events (dummy data)
-    var date = new Date()
-    var d    = date.getDate(),
-        m    = date.getMonth(),
-        y    = date.getFullYear()
-
-    var Calendar = FullCalendar.Calendar;
-    var Draggable = FullCalendar.Draggable;
-
-    //var containerEl = document.getElementById('external-events');
-    //var checkbox = document.getElementById('drop-remove');
-    var calendarEl = document.getElementById('calendar');
-    var calendarEl2 = document.getElementById('calendar-2');
-    var events = $('#calendar').data('events');
-    // events.foreach((event)=>{
-      
-    // })
-    events.map(event => {
-      event.start = new Date(Date.parse(event.start))
-      if(event.end){
-        event.end = new Date(Date.parse(event.end))
-      }
-   });
-    //console.log(events)
-    // events = JSON.parse(events);
-    // initialize the external events
-    // -----------------------------------------------------------------
-
-    // new Draggable(containerEl, {
-    //   itemSelector: '.external-event',
-    //   eventData: function(eventEl) {
-    //     return {
-    //       title: eventEl.innerText,
-    //       backgroundColor: window.getComputedStyle( eventEl ,null).getPropertyValue('background-color'),
-    //       borderColor: window.getComputedStyle( eventEl ,null).getPropertyValue('background-color'),
-    //       textColor: window.getComputedStyle( eventEl ,null).getPropertyValue('color'),
-    //     };
-    //   }
-    // });
-
-    var calendar = new Calendar(calendarEl, {
-      headerToolbar: {
-        left  : 'prevYear prev,next today',
-        center: 'title',
-        right : 'dayGridMonth,timeGridWeek,timeGridDay nextYear'
+    $.ajax('http://ip-api.com/json')
+    .then(
+      function success(response) {
+          $('#label4showHolidays').html("Show holidays in <span id='countryCode'>" + response.country + "</span>")
       },
-      themeSystem: 'bootstrap',
-      //Random default events
-
-      events: 
-        events
-        
-      ,
-      editable  : false,
-      droppable : false, // this allows things to be dropped onto the calendar !!!
-      weekNumbers: true,
-      weekNumberCalculation: 'ISO',
-      nowIndicator: true,
-      dateClick: function(info) {
-        $('#create-event-modal').modal('show');
-        var date = new Date(Date.parse(info.dateStr))
-      //   console.log(curdate);
-      //  $('#start').val(info.dateStr);
+      function fail(data, status) {
+          console.log('Request failed.  Returned status of',status);
       }
-    });
-
-    calendar.render();
+    );
+    var events = renderEvent();
+    $("#showHolidays").change(function() {
+      if(this.checked) {
+          var countryCode = getCountryCode($('#countryCode').html())
+          holidays = {googleCalendarId: countryCode}
+          renderCalendar(holidays)
+      }
+      else{
+        var events = $('#calendar').data('events');
+        events.map(event => {
+          event.start = new Date(Date.parse(event.start))
+          if(event.end){
+            event.end = new Date(Date.parse(event.end))
+          }
+        })
+        renderCalendar(events);
+      }
+    })
+    $('.time-remaining').each(function(i, obj){
+      var endDate = new Date($(obj).data('end'))
+      if(endDate.getFullYear() !== 1970){
+        var today = new Date()
+        var diff2dates = endDate - new Date(today.toString());
+        var diffStr
+        if(diff2dates > 0){
+          diffStr = 'remaining'
+        }else{
+          diffStr = 'ago'
+        }
+        let diffInMilliSeconds = Math.abs(diff2dates) / 1000;
+        // calculate days
+        const days = Math.floor(diffInMilliSeconds / 86400);
+        diffInMilliSeconds -= days * 86400;
+        // calculate hours
+        const hours = Math.floor(diffInMilliSeconds / 3600) % 24;
+        diffInMilliSeconds -= hours * 3600;
+        // calculate minutes
+        const minutes = Math.floor(diffInMilliSeconds / 60) % 60;
+        diffInMilliSeconds -= minutes * 60;
+        //
+        var finalStr = ((days !== 0) ? (days + "d ") : ('')) + ((hours !== 0) ? (hours + "h ") : ('')) + ((minutes !== 0) ? (minutes + "min") : (''))
+        $(obj).html(finalStr + " " + diffStr);
+      }else{
+        $(obj).html("All day event");
+      }
+    })
+    renderCalendar(events);
     // $('#calendar').fullCalendar()
     /* ADDING EVENTS */
     var currColor = '#3c8dbc' //Red by default
@@ -134,4 +124,49 @@ $(function () {
       $('#new-event').val('')
     })
 })
-  
+
+function renderEvent(){
+  var events = $('#calendar').data('events');
+  events.map(event => {
+    event.start = new Date(Date.parse(event.start))
+    if(event.end){
+      event.end = new Date(Date.parse(event.end))
+    }
+    var date = new Date()
+    if(event.start.getDay() == date.getDay() || (event.start <= date && event.end >= date)){
+      $('.todo-list').append('<li> <div class="icheck-primary d-inline ml-2"><input type="checkbox" id="' + event.title + '">' +
+      '<label for="' + event.title + '"></label>'
+      +'</div> <span class="text">' + event.title + '</span>'
+      +'<small class="badge text-white" style="background: ' + event.backgroundColor + '; border: 2px solid ' + event.borderColor + ';"><i class="far fa-clock"></i>'
+      +'<span class="time-remaining" data-end="' + event.end + '"></span>'
+      +'</small> </li>')
+    }
+  });
+  return events;
+}
+function renderCalendar(events){
+  var Calendar = FullCalendar.Calendar;
+  var Draggable = FullCalendar.Draggable;
+  var calendarEl = document.getElementById('calendar');
+  var calendar = new Calendar(calendarEl, {
+    headerToolbar: {
+      left  : 'prevYear prev,next today',
+      center: 'title',
+      right : 'dayGridMonth,timeGridWeek,timeGridDay nextYear'
+    },
+    googleCalendarApiKey: "AIzaSyCvmQT3WE0c7490FH6hYTIn1kWOw8U0vgk",
+    themeSystem: 'bootstrap',
+    events: events,
+
+    editable  : false,
+    droppable : false,
+    weekNumbers: true,
+    weekNumberCalculation: 'ISO',
+    nowIndicator: true,
+    dateClick: function(info) {
+      $('#create-event-modal').modal('show');
+      var date = new Date(Date.parse(info.dateStr))
+    },
+  });
+  calendar.render();
+}

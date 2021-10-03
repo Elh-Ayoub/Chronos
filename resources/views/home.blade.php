@@ -63,41 +63,22 @@
                             </div>
                             <div class="card-body">
                                 <ul class="todo-list" data-widget="todo-list">
-                                    @foreach ($today_events as $t_ev)
-                                    <li>
-                                      <div  class="icheck-primary d-inline ml-2">
-                                        <input type="checkbox" id="{{$t_ev->title}}">
-                                        <label for="{{$t_ev->title}}"></label>
-                                      </div>
-                                      <span class="text">{{$t_ev->title}}</span>
-                                      <small class="badge text-white" style="background: {{$t_ev->backgroundColor}}; border: 2px solid {{$t_ev->borderColor}};"><i class="far fa-clock"></i>{{($hours = floor(abs(strtotime($t_ev->end) - strtotime('+1 hour')) / (60*60))) != 0 ? ($hours."h ") : ("")  . (floor(abs(strtotime($t_ev->end) - strtotime('+1 hour')) / (60))-($hours * 60)) . "min"}} @if(strtotime($t_ev->end) - strtotime('+1 hour') < 0) ago @else  remaining @endif</small>
-                                    </li>
-                                    @endforeach
+                                    
                                 </ul>
                             </div>
                         </div>
                         <div class="card">
                             <div class="card-header">
-                            <h3 class="card-title">Create Event</h3>
+                            <h3 class="card-title">About Events</h3>
                             </div>
                             <div class="card-body">
-                            <div class="btn-group" style="width: 100%; margin-bottom: 10px;">
-                                <ul class="fc-color-picker" id="color-chooser">
-                                <li><a class="text-primary" href="#"><i class="fas fa-square"></i></a></li>
-                                <li><a class="text-warning" href="#"><i class="fas fa-square"></i></a></li>
-                                <li><a class="text-success" href="#"><i class="fas fa-square"></i></a></li>
-                                <li><a class="text-danger" href="#"><i class="fas fa-square"></i></a></li>
-                                <li><a class="text-muted" href="#"><i class="fas fa-square"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="input-group">
-                                <input id="new-event" type="text" class="form-control" placeholder="Event Title">
-
-                                <div class="input-group-append">
-                                <button id="add-new-event" type="button" class="btn btn-primary">Add</button>
-                                </div>
-                            </div>
                             <a class="btn btn-primary mt-2" href="{{route('events.create.view', $calendar->id)}}"><i class="fas fa-plus"></i>Create event</a>
+                            </div>
+                            <div class="row justify-content-center mb-2">
+                                <div class="icheck-primary d-inline ml-2 forHolidays">
+                                    <input type="checkbox" id="showHolidays">
+                                    <label id="label4showHolidays" for="showHolidays"></label>
+                                </div>
                             </div>
                             @if($calendar->name !== 'Main Calendar')
                             <button class="btn btn-danger" data-toggle="modal" data-target="#delete-calendar">Delete calendar</button>
@@ -170,6 +151,12 @@
 <script src="{{asset('plugins/moment/moment.min.js')}}"></script>
 <script src="{{asset('plugins/fullcalendar/main.js')}}"></script>
 <script src="{{asset('dist/js/demo.js')}}"></script>
+<script src="http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery-ui.custom.min.js"></script>
+<script src='http://fullcalendar.io/js/fullcalendar-2.1.1/fullcalendar.min.js'></script>
+<script src="{{asset('js/getCountryCode.js')}}"></script>
 <script src="{{asset('js/calendar.js')}}"></script>
+<script>
+    
+</script>
 </body>
 </html>
