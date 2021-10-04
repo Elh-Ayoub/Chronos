@@ -97,12 +97,40 @@
                 </div>
             </div>
         </section>
+        @foreach ($events as $event)
+        <div id="event-details-{{$event->id}}" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{$event->title}}</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body w-75 m-auto">
+                       <p class="row justify-content-between text-md"><span class="text-bold">Title :</span><span>{{$event->title}}</span></p>
+                       <p class="row justify-content-between text-md"><span class="text-bold">Description :</span><span>{{($event->description) ? ($event->description) : ("No description")}}</span></p>
+                       <p class="row justify-content-between text-md"><span class="text-bold">Start at :</span><span>{{$event->start}}</span></p>
+                       <p class="row justify-content-between text-md"><span class="text-bold">End at :</span><span>{{($event->end) ? ($event->end) : ("No end date specified")}}</span></p>
+                       <p class="row justify-content-between text-md"><span class="text-bold">All day event :</span><span>{{($event->allDay) ? ($event->allDay) : ("false")}}</span></p>
+                       <p class="row justify-content-between text-md"><span class="text-bold">Category :</span><span>{{$event->category}}</span></p>
+                    </div>
+                    <div class="modal-footer justify-content-around">
+                        <a href="{{route('events.edit.view', [$calendar->id, $event->id])}}" type="button" class="btn btn-warning">Edit</a>
+                        <form action="{{route('events.delete', $event->id)}}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endforeach
         <div id="create-event-modal" class="modal fade">
             <div class="modal-dialog modal-lg">
                 <form action="{{route('events.create', ['calendar_id' => $calendar->id])}}" method="POST" class="modal-content">
                     @csrf
                     <div class="modal-header">
-                        <h5 class="modal-title">Modal Title</h5>
+                        <h5 class="modal-title">Create event</h5>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">

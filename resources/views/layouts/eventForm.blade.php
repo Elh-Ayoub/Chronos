@@ -13,7 +13,7 @@
     </div>
     <div class="form-group d-flex">
         <label for="end" class="col-sm-4">End date</label>
-    <input type="datetime-local" id="end" name="end" class="form-control" value="{{($event) ? (date('Y-m-d\TH:i:s', strtotime($event->end))) : ('')}}">
+    <input type="datetime-local" id="end" name="end" class="form-control" value="{{($event && $event->end) ? (date('Y-m-d\TH:i:s', strtotime($event->end))) : ('')}}">
     </div>
 </div>
 <div class="form-group">
@@ -110,7 +110,7 @@
     <div class="form-group d-flex align-items-center col-4 mt-4">
         <label for="inputallDay" class="w-auto col-4">All day event</label>
         <select id="inputallDay" name="allDay" class="form-control custom-select">
-            <option selected disabled>{{($event) ? ($event->allDay ? ($event->allDay) : ('false')) : ('Select one')}}</option>
+            <option selected>{{($event) ? ($event->allDay ? ($event->allDay) : ('false')) : ('Select one')}}</option>
             <option>true</option>
             <option></span>false</option>
         </select>
@@ -118,7 +118,7 @@
     <div class="form-group d-flex align-items-center col-6 mt-4">
         <label for="inputcategory" class="mr-2">Category</label>
         <select id="inputcategory" name="category" class="form-control custom-select">
-            <option selected disabled>{{($event) ? ($event->category) : ('Select one')}}</option>
+            <option selected>{{($event) ? ($event->category) : ('Select one')}}</option>
             <option>Arrangement</option>
             <option>Reminder</option>
             <option>Task</option>

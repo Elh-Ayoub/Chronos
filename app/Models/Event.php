@@ -17,7 +17,6 @@ class Event extends Model
         'allDay',
         'category',
         'description',
-        'url',
         'calendar_id',
         'user_id',
     ];

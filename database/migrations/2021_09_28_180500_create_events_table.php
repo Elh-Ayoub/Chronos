@@ -23,7 +23,6 @@ class CreateEventsTable extends Migration
             $table->enum('allDay', ['true', 'false'])->nullable();
             $table->string('category');
             $table->text('description')->nullable();
-            $table->text('url')->nullable();
             $table->integer('calendar_id');
             $table->integer('user_id');
             $table->timestamps();

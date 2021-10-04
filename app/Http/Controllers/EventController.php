@@ -7,6 +7,7 @@ use App\Models\Calendar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use phpDocumentor\Reflection\Types\Null_;
 
 class EventController extends Controller
 {
@@ -57,7 +58,7 @@ class EventController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'start' => date('D M d Y H:i:s', strtotime($request->start)),
-            'end' => date('D M d Y H:i:s', strtotime($request->end)),
+            'end' => ($request->end) ? date('D M d Y H:i:s', strtotime($request->end)) : (null),
             'allDay' => $request->allDay  == 'true'? ('true') : (null),
             'category' => $request->category,
             'backgroundColor' => $request->backgroundColor,
@@ -66,7 +67,7 @@ class EventController extends Controller
             'user_id' => Auth::id(),
         ]);
         if($event){
-            $event->update(['url' => url(url('/calendars/'. $request->calendar_id .'/events/edit/'. $event->id))]);
+            // $event->update(['url' => url(url('/calendars/'. $request->calendar_id .'/events/edit/'. $event->id))]);
             return back()->with('success', 'Event created successfully!');
         }else{
             return back()->with('fail', 'Something went wrong. Try again!');
@@ -126,19 +127,25 @@ class EventController extends Controller
         }
         $event->update(array_merge($request->all(), [
             'start' => date('D M d Y H:i:s', strtotime($request->start)),
-            'end' => date('D M d Y H:i:s', strtotime($request->end)),
+            'end' => ($request->end) ? date('D M d Y H:i:s', strtotime($request->end)) : (null),
             'allDay' => ($request->allDay  == 'true') ? ('true') : (null)]));
-        return back()->with('success', 'Event Updated successfully!');
+        return redirect('/calendars/'.$event->calendar_id)->with('success', 'Event Updated successfully!');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Event  $event
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Event $event)
+    public function destroy($id)
     {
-        //
+        $event = Event::find($id);
+        if($event && $event->user_id == Auth::id()){
+            Event::destroy($id);
+            return back()->with('success', 'Event deleted successfully!');
+        }else{
+            return back()->with('fail', 'Event not exist or not yours');
+        }
     }
 }

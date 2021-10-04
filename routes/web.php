@@ -21,10 +21,6 @@ use Illuminate\Support\Facades\Auth;
 |
 */
  //////////////////// ----------Authentication module----------  ////////////////////
- Route::get('/home', function () {
-    $mainCal = Calendar::where(['user_id' => Auth::id(), 'name' => "Main Calendar"])->first();
-    return view('home', ['calendar' => $mainCal,'events' =>Event::where(['user_id' => Auth::id(), 'calendar_id' => $mainCal->id])->get()]);
-})->name('dashboard');
 Route::group([
     'middleware' => 'AuthCheck',
 ], function () {
@@ -34,6 +30,10 @@ Route::group([
     Route::post('auth/login', [AuthController::class, 'login'])->name('auth.login');
     Route::get('auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
     Route::post('auth/register', [AuthController::class, 'register'])->name('auth.register');
+    Route::get('/home', function () {
+        $mainCal = Calendar::where(['user_id' => Auth::id(), 'name' => "Main Calendar"])->first();
+        return view('home', ['calendar' => $mainCal,'events' =>Event::where(['user_id' => Auth::id(), 'calendar_id' => $mainCal->id])->get()]);
+    })->name('dashboard');
 });
 Route::group([
     'middleware' => 'web',
@@ -90,4 +90,5 @@ Route::group([
     Route::get('/calendars/{cal_id}/events/edit/{ev_id}', [EventController::class, 'edit'])->name('events.edit.view');
     Route::post('/events', [EventController::class, 'store'])->name('events.create');
     Route::patch('/events/{id}', [EventController::class, 'update'])->name('events.update');
+    Route::delete('/events/{id}', [EventController::class, 'destroy'])->name('events.delete');
 });

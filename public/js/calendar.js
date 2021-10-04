@@ -58,7 +58,9 @@ $(function () {
     })
     $('.time-remaining').each(function(i, obj){
       var endDate = new Date($(obj).data('end'))
-      if(endDate.getFullYear() !== 1970){
+      var allday = $(obj).data('allday')
+      console.log(allday)
+      if(allday !== true){
         var today = new Date()
         var diff2dates = endDate - new Date(today.toString());
         var diffStr
@@ -138,7 +140,7 @@ function renderEvent(){
       '<label for="' + event.title + '"></label>'
       +'</div> <span class="text">' + event.title + '</span>'
       +'<small class="badge text-white" style="background: ' + event.backgroundColor + '; border: 2px solid ' + event.borderColor + ';"><i class="far fa-clock"></i>'
-      +'<span class="time-remaining" data-end="' + event.end + '"></span>'
+      +'<span class="time-remaining" data-end="' + event.end + '" data-allday="' + event.allDay + '"></span>'
       +'</small> </li>')
     }
   });
@@ -166,6 +168,10 @@ function renderCalendar(events){
     dateClick: function(info) {
       $('#create-event-modal').modal('show');
       var date = new Date(Date.parse(info.dateStr))
+    },
+    eventClick: function(info){
+      // alert('Event: ' + info.event.title + "desc: " + info.event.id);
+      $('#event-details-' + info.event.id).modal('show');
     },
   });
   calendar.render();
