@@ -7,7 +7,6 @@ use App\Models\Calendar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use phpDocumentor\Reflection\Types\Null_;
 
 class EventController extends Controller
 {

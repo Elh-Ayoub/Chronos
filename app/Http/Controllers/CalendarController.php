@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use App\Models\Sharing;
 
 class CalendarController extends Controller
 {
@@ -63,15 +64,16 @@ class CalendarController extends Controller
         }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Calendar  $calendar
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Calendar $calendar)
-    {
-        //
+    public function home() {
+        $mainCal = Calendar::where(['user_id' => Auth::id(), 'name' => "Main Calendar"])->first();
+        $to_find = array();
+        foreach(Sharing::where(['target' => 'event', 'shared_to_email' => Auth::user()->email, 'accepted' => 'yes'])->get() as $share){
+            array_push($to_find, $share->target_id);
+        }
+        $sharedEvents = Event::find($to_find);
+        $events = Event::where(['user_id' => Auth::id(), 'calendar_id' => $mainCal->id])->get();
+        $events = $events->merge($sharedEvents);
+        return view('home', ['calendar' => $mainCal,'events' => $events]);
     }
 
     /**

@@ -113,15 +113,57 @@
                        <p class="row justify-content-between text-md"><span class="text-bold">All day event :</span><span>{{($event->allDay) ? ($event->allDay) : ("false")}}</span></p>
                        <p class="row justify-content-between text-md"><span class="text-bold">Category :</span><span>{{$event->category}}</span></p>
                     </div>
+                    @if($event->user_id === Auth::id())
                     <div class="modal-footer justify-content-around">
-                        <a href="{{route('events.edit.view', [$calendar->id, $event->id])}}" type="button" class="btn btn-warning">Edit</a>
-                        <form action="{{route('events.delete', $event->id)}}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
+                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#invite-to-event-{{$event->id}}"><i class="fas fa-bullhorn pr-2"></i>Invite</button>
+                        <div class="row">
+                            <a href="{{route('events.edit.view', [$calendar->id, $event->id])}}" type="button" class="btn btn-warning mr-2"><i class="fas fa-pen pr-2"></i>Edit</a>
+                            <form action="{{route('events.delete', $event->id)}}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger"><i class="fas fa-times pr-2"></i>Delete</button>
+                            </form>
+                        </div>
                     </div>
+                    @else
+                    <div class="modal-footer justify-content-around align-items-center">
+                        <div class="row justify-content-lg-start">
+                            <span class="text-bold mr-3">Created by:</span>
+                            <img src="{{App\Models\User::find($event->user_id)->profile_photo}}" class="img-sm img-circle" alt="User-Image" style="border: 1px solid grey;">
+                            <span>{{App\Models\User::find($event->user_id)->username}}</span>
+                        </div>
+                        <div class="row">
+                            <form action="" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger"><i class="fas fa-times pr-2"></i>Remove shared event</button>
+                            </form>
+                        </div>
+                    </div>
+                    @endif
                 </div>
+            </div>
+        </div>
+        <div id="invite-to-event-{{$event->id}}" class="modal fade">
+            <div class="modal-dialog">
+                <form class="modal-content" method="POST" action="{{route('events.invite', $event->id)}}">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title">Invite to {{$event->title}} event via email</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body emails-container">
+                        <div class="form-group d-flex align-items-center">
+                            <label class="mr-2">Email</label>
+                            <input type="text" name="email[]" class="form-control" maxlength="100">
+                        </div>
+                    </div>
+                    <div class="btn btn-outline-primary" onclick="addEmailsection()">Add</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-info"><i class="fas fa-bullhorn pr-2"></i>Invite</button>
+                    </div>
+                </form>
             </div>
         </div>
         @endforeach
@@ -184,7 +226,11 @@
 <script src="{{asset('js/getCountryCode.js')}}"></script>
 <script src="{{asset('js/calendar.js')}}"></script>
 <script>
-    
+    function addEmailsection(){
+        $('.emails-container').append('<div class="form-group d-flex align-items-center">'+
+                            '<label class="mr-2">Email</label>'+
+                            '<input type="text" name="email[]" class="form-control" maxlength="100"><button class="btn btn-danger" onClick="$(this).parent().remove();"><i class="fas fa-trash"></i></button></div>')
+    }
 </script>
 </body>
 </html>

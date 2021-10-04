@@ -6,8 +6,10 @@ use App\Http\Controllers\VerifyEmailController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\SharingController;
 use App\Models\Calendar;
 use App\Models\Event;
+use App\Models\Sharing;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -30,10 +32,6 @@ Route::group([
     Route::post('auth/login', [AuthController::class, 'login'])->name('auth.login');
     Route::get('auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
     Route::post('auth/register', [AuthController::class, 'register'])->name('auth.register');
-    Route::get('/home', function () {
-        $mainCal = Calendar::where(['user_id' => Auth::id(), 'name' => "Main Calendar"])->first();
-        return view('home', ['calendar' => $mainCal,'events' =>Event::where(['user_id' => Auth::id(), 'calendar_id' => $mainCal->id])->get()]);
-    })->name('dashboard');
 });
 Route::group([
     'middleware' => 'web',
@@ -79,6 +77,7 @@ Route::group([
     Route::delete('avatar/delete', [UserController::class, 'setDefaultAvatar'])->name('user.avatar.delete');    
     Route::delete('user/delete', [UserController::class, 'destroyAuthUser'])->name('user.delete');
     //////////////////// ----------Calendar module----------  ////////////////////
+    Route::get('/home', [CalendarController::class, 'home'])->name('dashboard');
     Route::get('/calendars', [CalendarController::class, 'index'])->name('user.calendars');
     Route::get('/calendars/{id}', [CalendarController::class, 'show'])->name('user.calendars.show');
     Route::post('/calendars', [CalendarController::class, 'store'])->name('calendars.create');
@@ -91,4 +90,8 @@ Route::group([
     Route::post('/events', [EventController::class, 'store'])->name('events.create');
     Route::patch('/events/{id}', [EventController::class, 'update'])->name('events.update');
     Route::delete('/events/{id}', [EventController::class, 'destroy'])->name('events.delete');
+
+    //////////////////// ----------Share/invite module----------  ////////////////////
+    Route::post('/events/{id}/invite', [SharingController::class, 'invite2event'])->name('events.invite');
+    Route::get('/shared/{id}/accept', [SharingController::class, 'addSharedEvent'])->name('events.invite.add');
 });
