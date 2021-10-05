@@ -50,7 +50,7 @@
                             <div class="icon">
                                 <i class="far fa-calendar-alt"></i>
                             </div>
-                            <a href="{{route('user.calendars.show', $calendar->id)}}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                            <a href="@if($calendar->name == "Main Calendar"){{route('dashboard')}} @else{{route('user.calendars.show', $calendar->id)}}@endif" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
                     @endforeach

@@ -27,7 +27,7 @@
                 <a id="dropdownSubMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">My Calendars</a>
                 <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
                     @foreach(\App\Models\Calendar::where('user_id', Auth::id())->get() as $calendar)
-                        <li><a href="{{route('user.calendars.show', $calendar->id)}}" class="dropdown-item">{{$calendar->name}}</a></li>
+                        <li><a href="@if($calendar->name == "Main Calendar"){{route('dashboard')}} @else{{route('user.calendars.show', $calendar->id)}}@endif" class="dropdown-item">{{$calendar->name}}</a></li>
                     @endforeach
                 </ul>
             </li>

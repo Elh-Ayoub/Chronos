@@ -67,4 +67,13 @@ class SharingController extends Controller
         return redirect('/home')->with('success', 'Shared event added successfully to Main Calendar');
     }
 
+    public function destroySharedEvent($id){
+        $sharedEvent = Sharing::where(['target' => 'event', 'target_id' => $id, 'shared_to_email' => Auth::user()->email]);
+        if($sharedEvent){
+            $sharedEvent->delete();
+            return back()->with('success', 'Shared event and invitation deleted successfully!');
+        }else{
+            return back()->with('fail', 'Shared event not found!');
+        }
+    }
 }

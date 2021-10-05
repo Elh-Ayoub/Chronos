@@ -102,7 +102,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">{{$event->title}}</h5>
+                        <h5 class="modal-title">{{$event->title}} @if($event->user_id !== Auth::id()) (Shared event) @endif</h5>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body w-75 m-auto">
@@ -132,13 +132,7 @@
                             <img src="{{App\Models\User::find($event->user_id)->profile_photo}}" class="img-sm img-circle" alt="User-Image" style="border: 1px solid grey;">
                             <span>{{App\Models\User::find($event->user_id)->username}}</span>
                         </div>
-                        <div class="row">
-                            <form action="" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger"><i class="fas fa-times pr-2"></i>Remove shared event</button>
-                            </form>
-                        </div>
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#remove-shared-event-{{$event->id}}"><i class="fas fa-times pr-2"></i>Remove shared event</button>    
                     </div>
                     @endif
                 </div>
@@ -162,6 +156,25 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-info"><i class="fas fa-bullhorn pr-2"></i>Invite</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="remove-shared-event-{{$event->id}}" class="modal fade">
+            <div class="modal-dialog">
+                <form class="modal-content bg-danger" method="POST" action="{{route('events.invite.delete', $event->id)}}">
+                    @csrf
+                    @method('DELETE')
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmation</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body ">
+                        <p>You're about to delete a shared event, if you continue you will not be able to use the same invitation to get this event again.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-outline-light"><i class="fas fa-trash pr-2"></i>Remove</button>
                     </div>
                 </form>
             </div>

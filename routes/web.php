@@ -94,4 +94,5 @@ Route::group([
     //////////////////// ----------Share/invite module----------  ////////////////////
     Route::post('/events/{id}/invite', [SharingController::class, 'invite2event'])->name('events.invite');
     Route::get('/shared/{id}/accept', [SharingController::class, 'addSharedEvent'])->name('events.invite.add');
+    Route::delete('/shared/{id}/delete', [SharingController::class, 'destroySharedEvent'])->name('events.invite.delete');
 });
