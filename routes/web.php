@@ -92,7 +92,12 @@ Route::group([
     Route::delete('/events/{id}', [EventController::class, 'destroy'])->name('events.delete');
 
     //////////////////// ----------Share/invite module----------  ////////////////////
+    //events
     Route::post('/events/{id}/invite', [SharingController::class, 'invite2event'])->name('events.invite');
     Route::get('/shared/{id}/accept', [SharingController::class, 'addSharedEvent'])->name('events.invite.add');
     Route::delete('/shared/{id}/delete', [SharingController::class, 'destroySharedEvent'])->name('events.invite.delete');
+    //calendar
+    Route::post('/calendar/{id}/share', [SharingController::class, 'shareCalendar'])->name('calendar.share');
+    Route::get('/calendar/shared/{id}/accept', [SharingController::class, 'addSharedCalendar'])->name('calendar.invite.add');
+
 });

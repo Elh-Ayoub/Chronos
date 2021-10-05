@@ -19,7 +19,14 @@ class CalendarController extends Controller
      */
     public function index()
     {
-        return view('Calendar.list', ['calendars' => Calendar::where('user_id', Auth::id())->get()]);
+        $myCalendars = Calendar::where('user_id', Auth::id())->get();
+        $to_find = array();
+        foreach(Sharing::where(['target' => 'calendar', 'shared_to_email' => Auth::user()->email, 'accepted' => 'yes'])->get() as $share){
+            array_push($to_find, $share->target_id);
+        }
+        $sharedCal = Event::find($to_find);
+        $myCalendars = $myCalendars->merge($sharedCal);
+        return view('Calendar.list', ['calendars' => $myCalendars]);
     }
 
     /**
@@ -57,10 +64,11 @@ class CalendarController extends Controller
     public function show($id)
     {
         $cal = Calendar::find($id);
-        if(!$cal || $cal->user_id !== Auth::id()){
-            return back()->with('fail', 'Calendar not exist or not yours');
+        $check4shared = Sharing::where(['target' => 'calendar', 'target_id' => $id,'shared_to_email' => Auth::user()->email, 'accepted' => 'yes'])->first();
+        if(($cal && $cal->user_id == Auth::id()) || $check4shared){
+            return view('home', ['calendar' =>  $cal, 'events' => Event::where('calendar_id', $cal->id)->get()]); 
         }else{
-            return view('home', ['calendar' =>  $cal, 'events' => Event::where(['user_id' => Auth::id(), 'calendar_id' => $cal->id])->get()]); 
+            return back()->with('fail', 'Calendar not exist or not yours');
         }
     }
 

@@ -20,6 +20,7 @@ class CreateSharingsTable extends Migration
             $table->enum('accepted', ['yes', 'no']);
             $table->integer('target_id');
             $table->string('shared_to_email');
+            $table->enum('shared_to_role', ['guest', 'admin'])->default('guest');
             $table->timestamps();
         });
     }

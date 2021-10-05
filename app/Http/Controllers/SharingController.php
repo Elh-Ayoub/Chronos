@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Calendar;
 use App\Models\Sharing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -65,6 +66,51 @@ class SharingController extends Controller
         }
         $share->update(['accepted' => 'yes']);
         return redirect('/home')->with('success', 'Shared event added successfully to Main Calendar');
+    }
+
+    public function shareCalendar(Request $request, $id){
+        $validator = Validator::make($request->all(), [
+            'email' => 'required',
+        ]);
+        $calendar = Calendar::find($id);
+        if(!$calendar){
+            return back()->with('fail', 'Calendar not found!');
+        }
+        if($validator->fails()){
+            return back()->with('fail-arr', ($validator->errors()->toArray()));
+        }
+        for($i = 0; $i < count($request->email); $i++){
+            $sharedCalendar = Sharing::create([
+                'shared_by' => Auth::id(),
+                'target' => 'calendar',
+                'target_id' => $id,
+                'shared_to_email' => $request->email[$i],
+                'accepted' => 'no',
+                'shared_to_role' => $request->role[$i],
+            ]); 
+            $data = array(
+                'calendar' => $calendar,
+                'user' => Auth::user(),
+                'email'=> $request->email[$i],
+                'sharing_id' => $sharedCalendar->id,
+                'role' => $request->role[$i],
+            );
+            Mail::send('Emails.sharing-mail',$data, function($message ) use($data) {
+                $message->to($data['email'], 'Sharing calendar')->subject
+                    ('Sharing calendar');
+                $message->from(env('MAIL_USERNAME'), Auth::user()->username);
+            });
+        }
+        return back()->with('success', 'Calendar shared successfully!');
+    }
+
+    public function addSharedCalendar($id){
+        $share = Sharing::find($id);
+        if(!$share){
+            return redirect('/home')->with('fail', 'Calendar/invitaion not found!');
+        }
+        $share->update(['accepted' => 'yes']);
+        return redirect('/home')->with('success', 'Shared Calendar added to the list');
     }
 
     public function destroySharedEvent($id){

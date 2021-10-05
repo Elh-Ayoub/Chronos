@@ -29,6 +29,9 @@
                     @foreach(\App\Models\Calendar::where('user_id', Auth::id())->get() as $calendar)
                         <li><a href="@if($calendar->name == "Main Calendar"){{route('dashboard')}} @else{{route('user.calendars.show', $calendar->id)}}@endif" class="dropdown-item">{{$calendar->name}}</a></li>
                     @endforeach
+                    @foreach(\App\Models\Sharing::where(['target' => 'calendar', 'shared_to_email' => Auth::user()->email, 'accepted' => 'yes'])->get() as $share)
+                    <li><a href="@if(\App\Models\Calendar::find($share->target_id)->name == "Main Calendar"){{route('dashboard')}} @else{{route('user.calendars.show', $share->target_id)}}@endif" class="dropdown-item">{{\App\Models\Calendar::find($share->target_id)->name}}</a></li>
+                    @endforeach
                 </ul>
             </li>
         </ul>

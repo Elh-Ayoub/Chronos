@@ -71,9 +71,11 @@
                             <div class="card-header">
                             <h3 class="card-title">About Events</h3>
                             </div>
-                            <div class="card-body">
-                            <a class="btn btn-primary mt-2" href="{{route('events.create.view', $calendar->id)}}"><i class="fas fa-plus"></i>Create event</a>
+                            <div class="row justify-content-around mt-2">
+                            <a class="btn btn-primary mt-2" href="{{route('events.create.view', $calendar->id)}}"><i class="fas fa-plus pr-2"></i>Create event</a>
+                            <button class="btn btn-info mt-2" data-toggle="modal" data-target="#share-calendar"><i class="fas fa-share pr-2"></i>Share Calendar</button>
                             </div>
+                            <hr>
                             <div class="row justify-content-center mb-2">
                                 <div class="icheck-primary d-inline ml-2 forHolidays">
                                     <input type="checkbox" id="showHolidays">
@@ -198,6 +200,31 @@
                 </form>
             </div>
         </div>
+        <div id="share-calendar" class="modal fade">
+            <div class="modal-dialog">
+                <form class="modal-content" method="POST" action="{{route('calendar.share', $calendar->id)}}">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title">Share {{$calendar->name}}</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body emails-container">
+                        <div class="form-group d-flex align-items-center">
+                            <input type="text" name="email[]" class="form-control" maxlength="100" placeholder="Email">
+                            <select name="role[]" class="form-control custom-select w-25">
+                                <option>guest</option>
+                                <option>admin</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="btn btn-outline-primary" onclick="addEmailRolesection()">Add</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-info"><i class="fas fa-share pr-2"></i>share</button>
+                    </div>
+                </form>
+            </div>
+        </div>
         <div id="delete-calendar" class="modal fade">
             <div class="modal-dialog">
                 <form action="{{route('calendars.delete', $calendar->id)}}" method="POST" class="modal-content bg-danger">
@@ -243,6 +270,15 @@
         $('.emails-container').append('<div class="form-group d-flex align-items-center">'+
                             '<label class="mr-2">Email</label>'+
                             '<input type="text" name="email[]" class="form-control" maxlength="100"><button class="btn btn-danger" onClick="$(this).parent().remove();"><i class="fas fa-trash"></i></button></div>')
+    }
+    function addEmailRolesection(){
+        $('.emails-container').append('<div class="form-group d-flex align-items-center">'+
+                            '<input type="text" name="email[]" class="form-control" maxlength="100" placeholder="Email">'+
+                           ' <select name="role[]" class="form-control custom-select w-25">'+
+                                '<option>guest</option>'+
+                                '<option>admin</option>'+
+                           ' </select>'+
+                            '<button class="btn btn-danger" onClick="$(this).parent().remove();"><i class="fas fa-trash"></i></button></div>')
     }
 </script>
 </body>
