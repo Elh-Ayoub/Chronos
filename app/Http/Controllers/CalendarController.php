@@ -66,7 +66,9 @@ class CalendarController extends Controller
         $cal = Calendar::find($id);
         $check4shared = Sharing::where(['target' => 'calendar', 'target_id' => $id,'shared_to_email' => Auth::user()->email, 'accepted' => 'yes'])->first();
         if(($cal && $cal->user_id == Auth::id()) || $check4shared){
-            return view('home', ['calendar' =>  $cal, 'events' => Event::where('calendar_id', $cal->id)->get()]); 
+            $watchers = $this->getCalWatchers($cal->id);
+            $invited = $this->getCalInvited($cal->id);
+            return view('home', ['calendar' =>  $cal, 'events' => Event::where('calendar_id', $cal->id)->get(), 'watchers' => $watchers, 'invited' => $invited]); 
         }else{
             return back()->with('fail', 'Calendar not exist or not yours');
         }
@@ -81,9 +83,31 @@ class CalendarController extends Controller
         $sharedEvents = Event::find($to_find);
         $events = Event::where(['user_id' => Auth::id(), 'calendar_id' => $mainCal->id])->get();
         $events = $events->merge($sharedEvents);
-        return view('home', ['calendar' => $mainCal,'events' => $events]);
+        $watchers = $this->getCalWatchers($mainCal->id);
+        $invited = $this->getCalInvited($mainCal->id);
+        return view('home', ['calendar' => $mainCal,'events' => $events, 'watchers' => $watchers, 'invited' => $invited]);
     }
 
+    public function getCalWatchers($id){
+        $calendar = Calendar::find($id);
+        if(!$calendar){return null;}
+        $watchers = array(['user' => User::find($calendar->user_id), 'role' => 'admin']);
+        $shared2 = Sharing::where(['target' => 'calendar', 'target_id' => $id, 'accepted' => 'yes'])->get();
+        foreach($shared2 as $share){
+            array_push($watchers, ['user' => User::where('email', $share->shared_to_email)->first(), 'role' => $share->shared_to_role]);
+        }
+        return $watchers;
+    }
+    public function getCalInvited($id){
+        $calendar = Calendar::find($id);
+        if(!$calendar){return null;}
+        $invited = array();
+        $shared2 = Sharing::where(['target' => 'calendar', 'target_id' => $id, 'accepted' => 'no'])->get();
+        foreach($shared2 as $share){
+            array_push($invited, ['email' => $share->shared_to_email, 'role' => $share->shared_to_role]);
+        }
+        return $invited;
+    }
     /**
      * Update the specified resource in storage.
      *

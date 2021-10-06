@@ -99,7 +99,7 @@ class SharingController extends Controller
                 'user' => Auth::user(),
                 'email'=> $request->email[$i],
                 'sharing_id' => $sharedCalendar->id,
-                'shared_to_role' => $request->role[$i],
+                'role' => $request->role[$i],
             );
             Mail::send('Emails.sharing-mail',$data, function($message ) use($data) {
                 $message->to($data['email'], 'Sharing calendar')->subject

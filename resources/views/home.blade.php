@@ -70,7 +70,7 @@
                         @if(($calendar->user_id === Auth::id()) || App\Models\Sharing::where(['target'=>'calendar', 'target_id'=>$calendar->id, 'shared_to_email' => Auth::user()->email, 'shared_to_role' => 'admin'])->first())
                         <div class="card">
                             <div class="card-header">
-                            <h3 class="card-title">About Events</h3>
+                            <h3 class="card-title">About</h3>
                             </div>
                             
                             <div class="row justify-content-around mt-2">
@@ -88,6 +88,35 @@
                             @if($calendar->name !== 'Main Calendar')
                             <button class="btn btn-danger" data-toggle="modal" data-target="#delete-calendar">Delete calendar</button>
                             @endif
+                        </div>
+                        @endif
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">People who can see this calendar</h3>
+                            </div>
+                            <div class="card-body">
+                                @foreach ($watchers as $user)
+                                <div class="row justify-content-lg-start align-items-center mt-2">
+                                    <img src="{{$user['user']->profile_photo}}" class="img-sm img-circle mr-2 " alt="User-Image" style="border: 1px solid grey;">
+                                    <span>{{($user['user']->username === Auth::user()->username) ? ("You") : ($user['user']->username)}}</span>
+                                    <span class="small ml-1">({{$user['role']}})</span>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @if($invited && $invited !== [])
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">People invied to this calendar</h3>
+                            </div>
+                            <div class="card-body">
+                                @foreach ($invited as $user)
+                                <div class="row justify-content-lg-start align-items-center mb-2">
+                                    <span class="text-primary">{{$user['email']}}</span>
+                                    <span class="ml-1"> as <span class="text-primary">{{$user['role']}}</span></span>
+                                </div>
+                                @endforeach
+                            </div>
                         </div>
                         @endif
                     </div>
