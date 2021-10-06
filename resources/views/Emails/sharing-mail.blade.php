@@ -9,7 +9,7 @@
             <p style="display: flex; justify-content: space-between; font-size: medium;"><strong>Description :</strong><span>{{($calendar->description) ? ($calendar->description) : ("No description")}}</span></p>
         </div>
         <p>To add this calendar to your list:</p>
-        <a href="{{route('calendar.invite.add', $sharing_id)}}" style="padding: 10px 15px; background-color: #2d529d; color: white; text-align: center; border-radius: 15px; font-size: 18px; margin-top: 10px; text-decoration: none;">Add Calendar</a>    
+        <a href="{{route('calendar.invite.add', [$sharing_id, 'role' => $role])}}" style="padding: 10px 15px; background-color: #2d529d; color: white; text-align: center; border-radius: 15px; font-size: 18px; margin-top: 10px; text-decoration: none;">Add Calendar</a>    
     </div>
     <div style="padding: 10px;">
         <p class="text-bold">Invited by: </p>

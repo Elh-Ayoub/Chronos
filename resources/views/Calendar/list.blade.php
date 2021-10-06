@@ -24,7 +24,7 @@
             <div class="container">
                 <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0"> Home</h1>
+                    <h1 class="m-0"> My Clendars</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -40,6 +40,25 @@
                 <button class="btn btn-primary mb-2" data-toggle="modal" data-target="#modal-create-calendar"><i class="fas fa-plus mr-2"></i>Create calendar</button>
                 <div class="row">
                     @foreach($calendars as $calendar)
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="small-box bg-gradient-lightblue">
+                            <div class="inner">
+                                <h3>{{$calendar->name}}</h3>
+                                <p>{{$calendar->description ? ($calendar->description) : ("No description")}}</p>
+                            </div>
+                            <div class="icon">
+                                <i class="far fa-calendar-alt"></i>
+                            </div>
+                            <a href="@if($calendar->name == "Main Calendar"){{route('dashboard')}} @else{{route('user.calendars.show', $calendar->id)}}@endif" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                <hr>
+                <h3>Shared with me</h3>
+                <div class="row">
+                    @foreach ($sharedCal as $calendar)
                     <div class="col-lg-3 col-6">
                         <!-- small box -->
                         <div class="small-box bg-gradient-lightblue">

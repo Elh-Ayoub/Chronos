@@ -13,6 +13,7 @@ class Sharing extends Model
         'target',
         'target_id',
         'shared_to_email',
+        'shared_to_role',
         'accepted',
     ];
 }

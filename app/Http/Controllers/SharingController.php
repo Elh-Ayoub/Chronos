@@ -34,13 +34,16 @@ class SharingController extends Controller
             return back()->with('fail-arr', json_decode($validator->errors()->toJson()));
         }
         foreach($request->email as $email){   
-            $sharedEvent = Sharing::create([
-                'shared_by' => Auth::id(),
-                'target' => 'event',
-                'target_id' => $id,
-                'shared_to_email' => $email,
-                'accepted' => 'no',
-            ]); 
+            $sharedEvent =Sharing::where(['shared_by' => Auth::id(),'target' => 'event','target_id' => $id,'shared_to_email' => $email,'accepted' => 'no'])->first(); 
+            if(!$sharedEvent){
+                $sharedEvent = Sharing::create([
+                    'shared_by' => Auth::id(),
+                    'target' => 'event',
+                    'target_id' => $id,
+                    'shared_to_email' => $email,
+                    'accepted' => 'no',
+                ]); 
+            }
             $data = array(
                 'event' => $event,
                 'user' => Auth::user(),
@@ -80,20 +83,23 @@ class SharingController extends Controller
             return back()->with('fail-arr', ($validator->errors()->toArray()));
         }
         for($i = 0; $i < count($request->email); $i++){
-            $sharedCalendar = Sharing::create([
-                'shared_by' => Auth::id(),
-                'target' => 'calendar',
-                'target_id' => $id,
-                'shared_to_email' => $request->email[$i],
-                'accepted' => 'no',
-                'shared_to_role' => $request->role[$i],
-            ]); 
+            $sharedCalendar = Sharing::where(['shared_by' => Auth::id(),'target' => 'calendar', 'target_id' => $id,'shared_to_email' => $request->email[$i]])->first();
+            if(!$sharedCalendar){
+                $sharedCalendar = Sharing::create([
+                    'shared_by' => Auth::id(),
+                    'target' => 'calendar',
+                    'target_id' => $id,
+                    'shared_to_email' => $request->email[$i],
+                    'accepted' => 'no',
+                    'shared_to_role' => $request->role[$i],
+                ]); 
+            }
             $data = array(
                 'calendar' => $calendar,
                 'user' => Auth::user(),
                 'email'=> $request->email[$i],
                 'sharing_id' => $sharedCalendar->id,
-                'role' => $request->role[$i],
+                'shared_to_role' => $request->role[$i],
             );
             Mail::send('Emails.sharing-mail',$data, function($message ) use($data) {
                 $message->to($data['email'], 'Sharing calendar')->subject
@@ -104,12 +110,12 @@ class SharingController extends Controller
         return back()->with('success', 'Calendar shared successfully!');
     }
 
-    public function addSharedCalendar($id){
+    public function addSharedCalendar(Request $request, $id){
         $share = Sharing::find($id);
         if(!$share){
             return redirect('/home')->with('fail', 'Calendar/invitaion not found!');
         }
-        $share->update(['accepted' => 'yes']);
+        $share->update(['accepted' => 'yes', 'shared_to_role' => $request->role]);
         return redirect('/home')->with('success', 'Shared Calendar added to the list');
     }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Calendar;
+use App\Models\Sharing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -69,6 +70,7 @@ class EventController extends Controller
             // $event->update(['url' => url(url('/calendars/'. $request->calendar_id .'/events/edit/'. $event->id))]);
             return back()->with('success', 'Event created successfully!');
         }else{
+            
             return back()->with('fail', 'Something went wrong. Try again!');
         }
     }
@@ -94,10 +96,11 @@ class EventController extends Controller
     public function edit($cal_id, $ev_id)
     {
         $cal = Calendar::find($cal_id);
-        if(!$cal || $cal->user_id !== Auth::id()){
-            return back()->with('fail', 'Calendar not exist or not yours');
+        $check4sharing = Sharing::where(['target' => 'calendar', 'target_id' => $cal_id, 'shared_to_email' => Auth::user()->email, 'shared_to_role' => 'admin'])->first();
+        if(($cal && $cal->user_id !== Auth::id()) || $check4sharing){
+            return view('Events.edit', ['calendar' => $cal, 'event' => Event::find($ev_id)]);
         }else{
-             return view('Events.edit', ['calendar' => $cal, 'event' => Event::find($ev_id)]);
+            return back()->with('fail', 'Calendar not exist or not yours');
         }
     }
 
@@ -140,7 +143,9 @@ class EventController extends Controller
     public function destroy($id)
     {
         $event = Event::find($id);
-        if($event && $event->user_id == Auth::id()){
+        $cal = Calendar::find($event->calendar_id);
+        $check4sharing = Sharing::where(['target' => 'calendar', 'target_id' => $cal->id, 'shared_to_email' => Auth::user()->email, 'shared_to_role' => 'admin'])->first();
+        if(($event && $event->user_id == Auth::id()) || ($cal->user_id == Auth::id()) || $check4sharing){
             Event::destroy($id);
             return back()->with('success', 'Event deleted successfully!');
         }else{

@@ -67,14 +67,17 @@
                                 </ul>
                             </div>
                         </div>
+                        @if(($calendar->user_id === Auth::id()) || App\Models\Sharing::where(['target'=>'calendar', 'target_id'=>$calendar->id, 'shared_to_email' => Auth::user()->email, 'shared_to_role' => 'admin'])->first())
                         <div class="card">
                             <div class="card-header">
                             <h3 class="card-title">About Events</h3>
                             </div>
+                            
                             <div class="row justify-content-around mt-2">
                             <a class="btn btn-primary mt-2" href="{{route('events.create.view', $calendar->id)}}"><i class="fas fa-plus pr-2"></i>Create event</a>
                             <button class="btn btn-info mt-2" data-toggle="modal" data-target="#share-calendar"><i class="fas fa-share pr-2"></i>Share Calendar</button>
                             </div>
+                            
                             <hr>
                             <div class="row justify-content-center mb-2">
                                 <div class="icheck-primary d-inline ml-2 forHolidays">
@@ -86,6 +89,7 @@
                             <button class="btn btn-danger" data-toggle="modal" data-target="#delete-calendar">Delete calendar</button>
                             @endif
                         </div>
+                        @endif
                     </div>
                 </div>
                 <div class="col-md-9">
@@ -115,7 +119,7 @@
                        <p class="row justify-content-between text-md"><span class="text-bold">All day event :</span><span>{{($event->allDay) ? ($event->allDay) : ("false")}}</span></p>
                        <p class="row justify-content-between text-md"><span class="text-bold">Category :</span><span>{{$event->category}}</span></p>
                     </div>
-                    @if($event->user_id === Auth::id())
+                    @if($event->user_id === Auth::id() || $calendar->user_id === Auth::id() || (App\Models\Sharing::where(['target'=>'calendar', 'target_id'=>$calendar->id, 'shared_to_email' => Auth::user()->email, 'shared_to_role' => 'admin'])->first()))
                     <div class="modal-footer justify-content-around">
                         <button type="button" class="btn btn-info" data-toggle="modal" data-target="#invite-to-event-{{$event->id}}"><i class="fas fa-bullhorn pr-2"></i>Invite</button>
                         <div class="row">
@@ -134,7 +138,11 @@
                             <img src="{{App\Models\User::find($event->user_id)->profile_photo}}" class="img-sm img-circle" alt="User-Image" style="border: 1px solid grey;">
                             <span>{{App\Models\User::find($event->user_id)->username}}</span>
                         </div>
+                        @if((App\Models\Sharing::where(['target'=>'calendar', 'target_id'=>$calendar->id, 'shared_to_email' => Auth::user()->email, 'shared_to_role' => 'guest'])->first()))
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Dismiss</button> 
+                        @else
                         <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#remove-shared-event-{{$event->id}}"><i class="fas fa-times pr-2"></i>Remove shared event</button>    
+                        @endif
                     </div>
                     @endif
                 </div>
@@ -183,6 +191,7 @@
         </div>
         @endforeach
         <div id="create-event-modal" class="modal fade">
+            @if(($calendar->user_id === Auth::id()) || App\Models\Sharing::where(['target'=>'calendar', 'target_id'=>$calendar->id, 'shared_to_email' => Auth::user()->email, 'shared_to_role' => 'admin'])->first())
             <div class="modal-dialog modal-lg">
                 <form action="{{route('events.create', ['calendar_id' => $calendar->id])}}" method="POST" class="modal-content">
                     @csrf
@@ -199,6 +208,22 @@
                     </div>
                 </form>
             </div>
+            @else
+            <div class="modal-dialog">
+                <div class="modal-content bg-danger">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Error!</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Sorry! as a guest you can't create events.</p>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-outline-light" data-dismiss="modal">Dismiss</button>
+                    </div>
+                </div>
+            </div>
+            @endif
         </div>
         <div id="share-calendar" class="modal fade">
             <div class="modal-dialog">

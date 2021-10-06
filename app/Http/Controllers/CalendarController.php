@@ -24,9 +24,9 @@ class CalendarController extends Controller
         foreach(Sharing::where(['target' => 'calendar', 'shared_to_email' => Auth::user()->email, 'accepted' => 'yes'])->get() as $share){
             array_push($to_find, $share->target_id);
         }
-        $sharedCal = Event::find($to_find);
-        $myCalendars = $myCalendars->merge($sharedCal);
-        return view('Calendar.list', ['calendars' => $myCalendars]);
+        $sharedCal = Calendar::find($to_find);
+        // $myCalendars = $myCalendars->merge($sharedCal);
+        return view('Calendar.list', ['calendars' => $myCalendars, 'sharedCal' => $sharedCal]);
     }
 
     /**
