@@ -176,3 +176,21 @@ function renderCalendar(events){
   });
   calendar.render();
 }
+
+$('#event-search').keyup(function(){
+  var value = this.value.toUpperCase()
+  let events = renderEvent();
+  if(value.length > 0){
+  $('#search-results').empty() 
+  events.map(event =>{
+    if(event.title.toUpperCase().indexOf(value) > -1){
+      $('#search-results').append('<li class="list-group-item dropdown-item" onClick="showEvent(' + event.id +')">' + event.title +'</li>')
+    }
+  });
+  }else{
+    $('#search-results').empty() 
+  }
+})
+function showEvent(id){
+  $('#event-details-' + id ).modal('show')
+}

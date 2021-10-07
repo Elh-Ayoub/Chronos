@@ -35,16 +35,15 @@
                 </ul>
             </li>
         </ul>
-        <form class="form-inline ml-0 ml-md-3">
-            <div class="input-group input-group-sm">
-            <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+        <div class="ml-0 ml-md-3">
+            <div class="d-inline-block">
+            <input class="form-control form-control-navbar" id="event-search" type="search" placeholder="Search" aria-label="Search">
             <div class="input-group-append">
-                <button class="btn btn-navbar" type="submit">
-                <i class="fas fa-search"></i>
-                </button>
+                <ul class="position-absolute list-group" id="search-results">
+                </ul>
             </div>
             </div>
-        </form>
+        </div>
         </div>
         <!-- Right navbar links -->
         <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto align-items-center">
