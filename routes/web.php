@@ -80,6 +80,7 @@ Route::group([
     Route::get('/home', [CalendarController::class, 'home'])->name('dashboard');
     Route::get('/calendars', [CalendarController::class, 'index'])->name('user.calendars');
     Route::get('/calendars/{id}', [CalendarController::class, 'show'])->name('user.calendars.show');
+    Route::patch('/calendars/{id}', [CalendarController::class, 'update'])->name('calendars.update');
     Route::post('/calendars', [CalendarController::class, 'store'])->name('calendars.create');
     Route::delete('/calendars/{id}', [CalendarController::class, 'destroy'])->name('calendars.delete');
 

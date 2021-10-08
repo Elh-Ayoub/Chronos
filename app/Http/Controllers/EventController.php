@@ -97,7 +97,7 @@ class EventController extends Controller
     {
         $cal = Calendar::find($cal_id);
         $check4sharing = Sharing::where(['target' => 'calendar', 'target_id' => $cal_id, 'shared_to_email' => Auth::user()->email, 'shared_to_role' => 'admin'])->first();
-        if(($cal && $cal->user_id !== Auth::id()) || $check4sharing){
+        if(($cal && $cal->user_id == Auth::id()) || $check4sharing){
             return view('Events.edit', ['calendar' => $cal, 'event' => Event::find($ev_id)]);
         }else{
             return back()->with('fail', 'Calendar not exist or not yours');

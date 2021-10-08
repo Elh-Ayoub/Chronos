@@ -79,15 +79,32 @@
                             </div>
                             
                             <hr>
-                            <div class="row justify-content-center mb-2">
+                            <div class="d-flex justify-content-around mb-2">
+                                <div>
                                 <div class="icheck-primary d-inline ml-2 forHolidays">
                                     <input type="checkbox" id="showHolidays">
                                     <label id="label4showHolidays" for="showHolidays"></label>
+                                </div><br>
+                                <div class="icheck-primary d-inline ml-2">
+                                    <input type="checkbox" name="ShowCategories" id="showArrangements" checked>
+                                    <label for="showArrangements">Arrangement</label>
+                                </div><br>
+                                <div class="icheck-primary d-inline ml-2">
+                                    <input type="checkbox" name="ShowCategories" id="showReminders" checked>
+                                    <label for="showReminders">Reminders</label>
+                                </div><br>
+                                <div class="icheck-primary d-inline ml-2">
+                                    <input type="checkbox" name="ShowCategories" id="showTasks" checked>
+                                    <label for="showTasks">Tasks</label>
+                                </div><br>
                                 </div>
                             </div>
-                            @if($calendar->name !== 'Main Calendar')
-                            <button class="btn btn-danger" data-toggle="modal" data-target="#delete-calendar">Delete calendar</button>
-                            @endif
+                            <div class="d-flex justify-content-around align-items-center mb-2">
+                                @if($calendar->name !== 'Main Calendar')
+                                <button class="btn btn-danger" data-toggle="modal" data-target="#delete-calendar"><i class="fas fa-times pr-2"></i>Delete calendar</button>
+                                <button class="btn btn-warning" data-toggle="modal" data-target="#edit-calendar"><i class="fas fa-pen pr-2"></i>Edit calendar</button>
+                                @endif
+                            </div>
                         </div>
                         @endif
                         <div class="card">
@@ -275,6 +292,34 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-info"><i class="fas fa-share pr-2"></i>share</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="edit-calendar" class="modal fade">
+            <div class="modal-dialog">
+                <form action="{{route('calendars.update', $calendar->id)}}" method="POST" class="modal-content">
+                    @csrf
+                    @method('PATCH')
+                    <div class="modal-header">
+                        <h4 class="modal-title">Edit {{$calendar->name}}</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" class="form-control" maxlength="100" value="{{$calendar->name}}">
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea id="description" name="description" class="form-control" maxlength="200">{{$calendar->description}}</textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning">Save</button>
                     </div>
                 </form>
             </div>

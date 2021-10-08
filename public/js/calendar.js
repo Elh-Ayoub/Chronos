@@ -53,8 +53,20 @@ $(function () {
             event.end = new Date(Date.parse(event.end))
           }
         })
+        events = limitCategories(events);
         renderCalendar(events);
       }
+    })
+    $("input[name=ShowCategories]").change(function(){
+      var events = $('#calendar').data('events');
+        events.map(event => {
+          event.start = new Date(Date.parse(event.start))
+          if(event.end){
+            event.end = new Date(Date.parse(event.end))
+          }
+        })
+        events = limitCategories(events);
+        renderCalendar(events);
     })
     $('.time-remaining').each(function(i, obj){
       var endDate = new Date($(obj).data('end'))
@@ -144,6 +156,7 @@ function renderEvent(){
       +'</small> </li>')
     }
   });
+  events = limitCategories(events);
   return events;
 }
 function renderCalendar(events){
@@ -193,4 +206,21 @@ $('#event-search').keyup(function(){
 })
 function showEvent(id){
   $('#event-details-' + id ).modal('show')
+}
+
+function limitCategories(events){
+  let categories = ['Arrangement', 'Reminder', 'Task'];
+  let newEvents = new Array()
+  events.map(event => {
+    if(event.category == 'Arrangement' && $('#showArrangements').is(":checked")){
+      newEvents.push(event)
+    }
+    if(event.category == 'Reminder' && $('#showReminders').is(":checked")){
+      newEvents.push(event)
+    }
+    if(event.category == 'Task' && $('#showTasks').is(":checked")){
+      newEvents.push(event)
+    }
+  })
+  return newEvents;
 }

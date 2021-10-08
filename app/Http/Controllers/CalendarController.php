@@ -112,12 +112,27 @@ class CalendarController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Calendar  $calendar
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Calendar $calendar)
+    public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|between:5,30',
+            'description' => 'max:500',
+        ]);
+        if($validator->fails()){
+            return back()->with('fail-arr', json_decode($validator->errors()->toJson()));
+        }
+        $calendar = Calendar::find($id);
+        if(!$calendar){
+            return back()->with('fail', 'Calendar not found!');
+        }
+        $calendar->update([
+            'name' => $request->name,
+            'description' => $request->description,
+        ]);
+        return back()->with('success', 'Calendar updated successfully!');
     }
 
     /**
