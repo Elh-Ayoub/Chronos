@@ -100,5 +100,7 @@ Route::group([
     //calendar
     Route::post('/calendar/{id}/share', [SharingController::class, 'shareCalendar'])->name('calendar.share');
     Route::get('/calendar/shared/{id}/accept', [SharingController::class, 'addSharedCalendar'])->name('calendar.invite.add');
+    Route::patch('/calendar/shared/{cal_id}/update/{user_id}', [SharingController::class, 'updateRole'])->name('sharing.edit.role');
+    Route::delete('/calendar/shared/{cal_id}/delete/{user_id}', [SharingController::class, 'destroyInvitedUser'])->name('sharing.delete.user');
 
 });

@@ -121,8 +121,8 @@
                                     </div>
                                     @if($user['user']->id !== $calendar->user_id && ($calendar->user_id == Auth::id() || App\Models\Sharing::where(['target'=>'calendar', 'target_id'=>$calendar->id, 'shared_to_email' => Auth::user()->email, 'shared_to_role' => 'admin'])->first()))
                                     <div class="row">
-                                        <button class="btn btn-warning btn-xs mr-1"><i class="fas fa-pen"></i></button>
-                                        <button class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></button>
+                                        <button class="btn btn-warning btn-xs mr-1" data-toggle="modal" data-target="#update-invited-role-{{$user['user']->id}}"><i class="fas fa-pen"></i></button>
+                                        <button class="btn btn-danger btn-xs" data-toggle="modal" data-target="#remove-invited-{{$user['user']->id}}"><i class="fas fa-trash"></i></button>
                                     </div>
                                     @endif
                                 </div>
@@ -353,6 +353,7 @@
                 </form>
             </div>
         </div>
+        @include('layouts.WatchersModals', ['watchers' => $watchers])
     </div>
   @include('layouts.footer')
 </div>

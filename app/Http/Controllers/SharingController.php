@@ -119,6 +119,27 @@ class SharingController extends Controller
         return redirect('/home')->with('success', 'Shared Calendar added to the list');
     }
 
+    public function updateRole(Request $request, $cal_id, $user_id){
+        $validator = Validator::make($request->all(), [
+            'role' => 'required',
+        ]);
+        $calendar = Calendar::find($cal_id);
+        $user = User::find($user_id);
+        if(!$calendar || !$user){
+            return back()->with('fail', 'Calendar/User not found!');
+        }
+        if($validator->fails()){
+            return back()->with('fail-arr', ($validator->errors()->toArray()));
+        }
+        $sharing = Sharing::where(['target' => 'calendar', 'target_id' => $cal_id, 'shared_to_email' => $user->email, 'accepted' => 'yes'])->first();
+        if(!$sharing){
+            return back()->with('fail', 'Cannot see that this calendar shared with you!');
+        }else{
+            $sharing->update(['shared_to_role' => $request->role]);
+            return back()->with('success', $user->username . ' updated successfully to ' . $request->role);
+        }
+    }
+
     public function destroySharedEvent($id){
         $sharedEvent = Sharing::where(['target' => 'event', 'target_id' => $id, 'shared_to_email' => Auth::user()->email]);
         if($sharedEvent){
@@ -126,6 +147,21 @@ class SharingController extends Controller
             return back()->with('success', 'Shared event and invitation deleted successfully!');
         }else{
             return back()->with('fail', 'Shared event not found!');
+        }
+    }
+    
+    public function destroyInvitedUser($cal_id, $user_id){
+        $calendar = Calendar::find($cal_id);
+        $user = User::find($user_id);
+        if(!$calendar || !$user){
+            return back()->with('fail', 'Calendar/User not found!');
+        }
+        $sharing = Sharing::where(['target' => 'calendar', 'target_id' => $cal_id, 'shared_to_email' => $user->email, 'accepted' => 'yes'])->first();
+        if(!$sharing){
+            return back()->with('fail', 'Cannot see that this calendar shared with you!');
+        }else{
+            $sharing->delete();
+            return back()->with('success', $user->username . ' removed successfully from this calendar!');
         }
     }
 }
