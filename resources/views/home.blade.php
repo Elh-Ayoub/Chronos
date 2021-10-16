@@ -67,19 +67,26 @@
                                 </ul>
                             </div>
                         </div>
-                        @if(($calendar->user_id === Auth::id()) || App\Models\Sharing::where(['target'=>'calendar', 'target_id'=>$calendar->id, 'shared_to_email' => Auth::user()->email, 'shared_to_role' => 'admin'])->first())
                         <div class="card">
                             <div class="card-header">
                             <h3 class="card-title">About</h3>
                             </div>
-                            
-                            <div class="row justify-content-around mt-2">
-                            <a class="btn btn-primary mt-2" href="{{route('events.create.view', $calendar->id)}}"><i class="fas fa-plus pr-2"></i>Create event</a>
-                            <button class="btn btn-info mt-2" data-toggle="modal" data-target="#share-calendar"><i class="fas fa-share pr-2"></i>Share Calendar</button>
+                            @if(($calendar->user_id === Auth::id()) || App\Models\Sharing::where(['target'=>'calendar', 'target_id'=>$calendar->id, 'shared_to_email' => Auth::user()->email, 'shared_to_role' => 'admin'])->first())
+                            <div class="d-flex justify-content-around mt-2 align-items-center flex-column">
+                                <div class="d-flex mt-2">
+                                    <a class="btn btn-primary mr-1" href="{{route('events.create.view', $calendar->id)}}"><i class="fas fa-plus pr-2"></i>Create event</a>
+                                    <button class="btn btn-info ml-1" data-toggle="modal" data-target="#share-calendar"><i class="fas fa-share pr-2"></i>Share Calendar</button>  
+                                </div>
+                                <div class="d-flex mt-2">
+                                    @if($calendar->name !== 'Main Calendar')
+                                    <button class="btn btn-danger mr-1" data-toggle="modal" data-target="#delete-calendar"><i class="fas fa-times pr-2"></i>Delete calendar</button>
+                                    <button class="btn btn-warning ml-1" data-toggle="modal" data-target="#edit-calendar"><i class="fas fa-pen pr-2"></i>Edit calendar</button>
+                                    @endif
+                                </div>
                             </div>
-                            
                             <hr>
-                            <div class="d-flex justify-content-around mb-2">
+                            @endif
+                            <div class="d-flex justify-content-around mb-2 mt-2">
                                 <div>
                                 <div class="icheck-primary d-inline ml-2 forHolidays">
                                     <input type="checkbox" id="showHolidays">
@@ -99,24 +106,25 @@
                                 </div><br>
                                 </div>
                             </div>
-                            <div class="d-flex justify-content-around align-items-center mb-2">
-                                @if($calendar->name !== 'Main Calendar')
-                                <button class="btn btn-danger" data-toggle="modal" data-target="#delete-calendar"><i class="fas fa-times pr-2"></i>Delete calendar</button>
-                                <button class="btn btn-warning" data-toggle="modal" data-target="#edit-calendar"><i class="fas fa-pen pr-2"></i>Edit calendar</button>
-                                @endif
-                            </div>
                         </div>
-                        @endif
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">People who can see this calendar</h3>
                             </div>
                             <div class="card-body">
                                 @foreach ($watchers as $user)
-                                <div class="row justify-content-lg-start align-items-center mt-2">
-                                    <img src="{{$user['user']->profile_photo}}" class="img-sm img-circle mr-2 " alt="User-Image" style="border: 1px solid grey;">
-                                    <span>{{($user['user']->username === Auth::user()->username) ? ("You") : ($user['user']->username)}}</span>
-                                    <span class="small ml-1">({{$user['role']}})</span>
+                                <div class="row justify-content-between align-items-center align-content-center mt-2 w-75 ml-auto mr-auto">
+                                    <div class="row justify-content-lg-start align-items-center">
+                                        <img src="{{$user['user']->profile_photo}}" class="img-sm img-circle mr-2 " alt="User-Image" style="border: 1px solid grey;">
+                                        <span>{{($user['user']->username === Auth::user()->username) ? ("You") : ($user['user']->username)}}</span>
+                                        <span class="small ml-1">({{$user['role']}})</span>  
+                                    </div>
+                                    @if($user['user']->id !== $calendar->user_id && ($calendar->user_id == Auth::id() || App\Models\Sharing::where(['target'=>'calendar', 'target_id'=>$calendar->id, 'shared_to_email' => Auth::user()->email, 'shared_to_role' => 'admin'])->first()))
+                                    <div class="row">
+                                        <button class="btn btn-warning btn-xs mr-1"><i class="fas fa-pen"></i></button>
+                                        <button class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                    @endif
                                 </div>
                                 @endforeach
                             </div>

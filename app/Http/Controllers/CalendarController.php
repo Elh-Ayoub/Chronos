@@ -64,6 +64,9 @@ class CalendarController extends Controller
     public function show($id)
     {
         $cal = Calendar::find($id);
+        if(!$cal){
+            return redirect('/home')->with('fail', 'Calendar not found!');
+        }
         $check4shared = Sharing::where(['target' => 'calendar', 'target_id' => $id,'shared_to_email' => Auth::user()->email, 'accepted' => 'yes'])->first();
         if(($cal && $cal->user_id == Auth::id()) || $check4shared){
             $watchers = $this->getCalWatchers($cal->id);
@@ -146,6 +149,8 @@ class CalendarController extends Controller
         $calendar = Calendar::find($id);
         if($calendar && $calendar->user_id == Auth::id()){
             Calendar::destroy($id);
+            Sharing::where(['target' => 'calendar', 'target_id' => $id])->delete();
+            Event::where('calendar_id', $id)->delete();
             return redirect('/home');
         }else{
             return back()->with('fail', 'Calendar not exist or not yours');
