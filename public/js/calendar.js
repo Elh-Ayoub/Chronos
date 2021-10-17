@@ -108,7 +108,7 @@ function renderEvent(){
       event.end = new Date(Date.parse(event.end))
     }
     var date = new Date()
-    if(event.start.getDay() == date.getDay() || (event.start <= date && event.end >= date)){
+    if(moment(event.start).format('YYYY-MM-DD') == moment(date).format('YYYY-MM-DD') || (event.start <= date && event.end >= date)){
       $('.todo-list').append('<li> <div class="icheck-primary d-inline ml-2"><input type="checkbox" id="' + event.title + '">' +
       '<label for="' + event.title + '"></label>'
       +'</div> <span class="text">' + event.title + '</span>'
@@ -153,7 +153,7 @@ function renderCalendar(events){
 
 $('#event-search').keyup(function(){
   var value = this.value.toUpperCase()
-  let events = renderEvent();
+  var events = $('#calendar').data('events');
   if(value.length > 0){
   $('#search-results').empty() 
   events.map(event =>{
