@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Calendar;
 use App\Models\Sharing;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\CalendarController;
+use Illuminate\Support\Facades\Mail;
 
 class EventController extends Controller
 {
@@ -134,6 +137,31 @@ class EventController extends Controller
         return redirect('/calendars/'.$event->calendar_id)->with('success', 'Event Updated successfully!');
     }
 
+    public function getAllEventWatchers($id){
+        $event = Event::find($id);
+        if(!$event){return [];}
+        $allWatchers = array(User::find($event->user_id)->email);
+        $sharings = Sharing::where(['target' => 'event', 'target_id' => $id])->get();
+        if($sharings){
+            foreach($sharings as $share){
+              (!in_array($share->shared_to_email, $allWatchers)) ?  array_push($allWatchers, $share->shared_to_email) : (null);
+            }
+        }
+        $calendarController = new CalendarController();
+        $calWatchers = $calendarController->getCalWatchers($event->calendar_id);
+        if($calWatchers){
+            foreach($calWatchers as $user){
+                (!in_array($user['user']->email, $allWatchers)) ?  array_push($allWatchers, $user['user']->email) : (null);
+            } 
+        }
+        $calInvited = $calendarController->getCalInvited($event->calendar_id);
+        if($calInvited){
+            foreach($calInvited as $user){
+                (!in_array($user['email'], $allWatchers)) ?  array_push($allWatchers, $user['email']) : (null);
+            }
+        }
+        return $allWatchers;
+    }
     /**
      * Remove the specified resource from storage.
      *
