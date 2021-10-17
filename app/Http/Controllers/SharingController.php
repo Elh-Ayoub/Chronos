@@ -164,4 +164,18 @@ class SharingController extends Controller
             return back()->with('success', $user->username . ' removed successfully from this calendar!');
         }
     }
+    
+    public function destroyInvitation($cal_id, $email){
+        $calendar = Calendar::find($cal_id);
+        if(!$calendar){
+            return back()->with('fail', 'Calendar not found!');
+        }
+        $sharing = Sharing::where(['target' => 'calendar', 'target_id' => $cal_id, 'shared_to_email' => $email, 'accepted' => 'no'])->first();
+        if(!$sharing){
+            return back()->with('fail', 'Cannot see that this email has been invited!');
+        }else{
+            $sharing->delete();
+            return back()->with('success', 'Invitation canceled successfully!');
+        }
+    }
 }

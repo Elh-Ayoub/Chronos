@@ -136,9 +136,14 @@
                             </div>
                             <div class="card-body">
                                 @foreach ($invited as $user)
-                                <div class="row justify-content-lg-start align-items-center mb-2">
-                                    <span class="text-primary">{{$user['email']}}</span>
-                                    <span class="ml-1"> as <span class="text-primary">{{$user['role']}}</span></span>
+                                <div class="row justify-content-around align-items-center mb-2">
+                                    <div class="row justify-content-lg-start align-items-center">
+                                     <span class="text-primary">{{$user['email']}}</span>
+                                    <span class="ml-1"> as <span class="text-primary">{{$user['role']}}</span></span>   
+                                    </div>                                    
+                                    @if(($calendar->user_id === Auth::id()) || App\Models\Sharing::where(['target'=>'calendar', 'target_id'=>$calendar->id, 'shared_to_email' => Auth::user()->email, 'shared_to_role' => 'admin'])->first())
+                                    <button class="btn btn-danger btn-xs " data-toggle="modal" data-target="#cancel-invitation-user-{{explode('@',$user['email'])[0]}}"><i class="fas fa-trash"></i></button>
+                                    @endif
                                 </div>
                                 @endforeach
                             </div>
@@ -353,7 +358,7 @@
                 </form>
             </div>
         </div>
-        @include('layouts.WatchersModals', ['watchers' => $watchers])
+        @include('layouts.WatchersModals')
     </div>
   @include('layouts.footer')
 </div>

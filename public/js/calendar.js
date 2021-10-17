@@ -71,7 +71,6 @@ $(function () {
     $('.time-remaining').each(function(i, obj){
       var endDate = new Date($(obj).data('end'))
       var allday = $(obj).data('allday')
-      console.log(allday)
       if(allday !== true){
         var today = new Date()
         var diff2dates = endDate - new Date(today.toString());
