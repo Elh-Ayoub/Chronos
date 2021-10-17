@@ -14,6 +14,7 @@
   <!-- Theme style -->
   <link rel="stylesheet" href="{{asset('dist/css/adminlte.min.css')}}">
   <link rel="shortcut icon" type="image/x-icon" href="{{ asset('images/logo_transparent.png')}}"/>
+  <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
 </head>
 <body class="hold-transition sidebar-collapse layout-top-nav">
 <div class="wrapper">
@@ -121,5 +122,29 @@
 <script src="{{asset('plugins/fullcalendar/main.js')}}"></script>
 <script src="{{asset('dist/js/demo.js')}}"></script>
 <script src="{{asset('js/calendar.js')}}"></script>
+<script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
+@if(Session::get('fail'))
+<script>
+  $(function() {
+    toastr.error("{{Session::get('fail')}}")
+  });
+</script>
+@endif
+@if(Session::get('success'))
+<script>
+  $(function() {
+    toastr.success("{{Session::get('success')}}")
+  });
+</script>
+@endif
+@if(Session::get('fail-arr'))
+    @foreach(Session::get('fail-arr') as $key => $err)
+    <script>
+      $(function() {
+        toastr.error("{{$err[0]}}");
+      });
+    </script>
+    @endforeach
+@endif
 </body>
 </html>

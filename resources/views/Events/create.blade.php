@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="{{asset('plugins/fontawesome-free/css/all.min.css')}}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{asset('dist/css/adminlte.min.css')}}">
+  <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
   <link rel="shortcut icon" type="image/x-icon" href="{{ asset('images/logo_transparent.png')}}"/>
   <style>.color-select:checked + label{ background-color: rgb(124, 124, 124); border-radius: 10px;}</style>
 </head>
@@ -35,23 +36,6 @@
                     </ol>
                 </div>
                 </div>
-                @if(Session::get('success'))
-                    <div class="alert alert-success col-sm-3 ml-2 text-center" role="alert">
-                        {{Session::get('success')}}
-                    </div>
-                @endif
-                @if(Session::get('fail'))
-                    <div class="alert alert-danger col-sm-3 ml-1" role="alert">
-                        {{Session::get('fail')}}
-                    </div>
-                @endif
-                @if(Session::get('fail-arr'))
-                    <div class="alert alert-danger col-sm-3 ml-1" role="alert">
-                        @foreach(Session::get('fail-arr') as $key => $err)
-                        <p>{{$key . ': ' . $err[0]}}</p>
-                        @endforeach
-                    </div>
-                @endif
             </div>
         </div>
         <section class="content">
@@ -92,5 +76,29 @@
 <script src="{{asset('plugins/fullcalendar/main.js')}}"></script>
 <script src="{{asset('dist/js/demo.js')}}"></script>
 <script src="{{asset('js/calendar.js')}}"></script>
+<script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
+@if(Session::get('fail'))
+<script>
+  $(function() {
+    toastr.error("{{Session::get('fail')}}")
+  });
+</script>
+@endif
+@if(Session::get('success'))
+<script>
+  $(function() {
+    toastr.success("{{Session::get('success')}}")
+  });
+</script>
+@endif
+@if(Session::get('fail-arr'))
+    @foreach(Session::get('fail-arr') as $key => $err)
+    <script>
+      $(function() {
+        toastr.error("{{$err[0]}}");
+      });
+    </script>
+    @endforeach
+@endif
 </body>
 </html>

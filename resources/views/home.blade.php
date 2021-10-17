@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="{{asset('plugins/fontawesome-free/css/all.min.css')}}">
   <link rel="stylesheet" href="{{asset('plugins/fullcalendar/main.css')}}">
   <link rel="stylesheet" href="{{asset('plugins/icheck-bootstrap/icheck-bootstrap.min.css')}}">
+  <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{asset('dist/css/adminlte.min.css')}}">
   <link rel="shortcut icon" type="image/x-icon" href="{{ asset('images/logo_transparent.png')}}"/>
@@ -33,23 +34,6 @@
                     </ol>
                 </div>
                 </div>
-                @if(Session::get('success'))
-                    <div class="alert alert-success col-sm-3 ml-2 text-center" role="alert">
-                        {{Session::get('success')}}
-                    </div>
-                @endif
-                @if(Session::get('fail'))
-                    <div class="alert alert-danger col-sm-3 ml-1" role="alert">
-                        {{Session::get('fail')}}
-                    </div>
-                @endif
-                @if(Session::get('fail-arr'))
-                    <div class="alert alert-danger col-sm-3 ml-1" role="alert">
-                        @foreach(Session::get('fail-arr') as $key => $err)
-                        <p>{{$key . ': ' . $err[0]}}</p>
-                        @endforeach
-                    </div>
-                @endif
             </div>
         </div>
         <section class="content">
@@ -378,6 +362,7 @@
 <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/fullcalendar.min.js'></script>
 <script src="{{asset('js/getCountryCode.js')}}"></script>
 <script src="{{asset('js/calendar.js')}}"></script>
+<script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
 <script>
     function addEmailsection(){
         $('.emails-container').append('<div class="form-group d-flex align-items-center">'+
@@ -394,5 +379,28 @@
                             '<button class="btn btn-danger" onClick="$(this).parent().remove();"><i class="fas fa-trash"></i></button></div>')
     }
 </script>
+@if(Session::get('fail'))
+<script>
+  $(function() {
+    toastr.error("{{Session::get('fail')}}")
+  });
+</script>
+@endif
+@if(Session::get('success'))
+<script>
+  $(function() {
+    toastr.success("{{Session::get('success')}}")
+  });
+</script>
+@endif
+@if(Session::get('fail-arr'))
+    @foreach(Session::get('fail-arr') as $key => $err)
+    <script>
+      $(function() {
+        toastr.error("{{$err[0]}}");
+      });
+    </script>
+    @endforeach
+@endif
 </body>
 </html>

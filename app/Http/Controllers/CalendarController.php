@@ -151,7 +151,7 @@ class CalendarController extends Controller
             Calendar::destroy($id);
             Sharing::where(['target' => 'calendar', 'target_id' => $id])->delete();
             Event::where('calendar_id', $id)->delete();
-            return redirect('/home');
+            return redirect('/home')->with('success', 'Calendar deleted successfully!');
         }else{
             return back()->with('fail', 'Calendar not exist or not yours');
         }
