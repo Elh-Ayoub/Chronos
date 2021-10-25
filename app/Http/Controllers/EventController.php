@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\CalendarController;
+use App\Models\Chat;
 use Illuminate\Support\Facades\Mail;
 
 class EventController extends Controller
@@ -70,8 +71,16 @@ class EventController extends Controller
             'user_id' => Auth::id(),
         ]);
         if($event){
-            // $event->update(['url' => url(url('/calendars/'. $request->calendar_id .'/events/edit/'. $event->id))]);
-            return back()->with('success', 'Event created successfully!');
+            //create chat room for event
+            $chat = Chat::create([
+                'name' => $event->title . ' chat room',
+                'event_id' => $event->id,
+            ]);
+            if($chat){
+               return back()->with('success', 'Event created successfully!'); 
+            }else{
+                return back()->with('fail', 'Something went wrong. Try again!');
+            }
         }else{
             
             return back()->with('fail', 'Something went wrong. Try again!');
@@ -174,6 +183,7 @@ class EventController extends Controller
         $cal = Calendar::find($event->calendar_id);
         $check4sharing = Sharing::where(['target' => 'calendar', 'target_id' => $cal->id, 'shared_to_email' => Auth::user()->email, 'shared_to_role' => 'admin'])->first();
         if(($event && $event->user_id == Auth::id()) || ($cal->user_id == Auth::id()) || $check4sharing){
+            Chat::where('event_id', $id)->delete();
             Event::destroy($id);
             return back()->with('success', 'Event deleted successfully!');
         }else{

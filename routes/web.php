@@ -5,7 +5,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VerifyEmailController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\SharingController;
 use App\Models\Calendar;
 use App\Models\Event;
@@ -104,4 +106,7 @@ Route::group([
     Route::delete('/calendar/shared/{cal_id}/delete/{user_id}', [SharingController::class, 'destroyInvitedUser'])->name('sharing.delete.user');
     Route::delete('/calendar/shared/{cal_id}/cancel/{email}', [SharingController::class, 'destroyInvitation'])->name('sharing.cancel.user');
 
+    //////////////////// ----------Event chat module----------  ////////////////////
+    Route::get('/event/{id}/chat', [ChatController::class, 'show'])->name('events.chatroom');
+    Route::post('/chat/{id}/send', [MessageController::class, 'store'])->name('send.message');
 });

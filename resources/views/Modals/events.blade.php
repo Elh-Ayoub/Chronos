@@ -2,8 +2,9 @@
 <div id="event-details-{{$event->id}}" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header align-items-center">
                 <h5 class="modal-title">{{$event->title}} @if($event->user_id !== Auth::id()) (Shared event) @endif</h5>
+                <a class="btn btn-info btn-sm ml-2" href="{{route('events.chatroom', $event->id)}}"><i class="fas fa-comments"></i></a>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body w-75 m-auto">
