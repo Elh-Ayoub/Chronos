@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\Event;
 use App\Models\Calendar;
 use App\Models\User;
+use DateTime;
+use DateTimeZone;
 
 class emailNotification extends Command
 {
@@ -54,7 +56,10 @@ class emailNotification extends Command
                     'email' => $user,
                     'msg' => '',
                 );
-                if(date('D M d Y H:i', strtotime($event->start)) === date('D M d Y H:i', strtotime("+1 hour"))){
+                $timezone = (User::where('email', $user)->first()) ? (User::where('email', $user)->first()->timezone) : ('UTC');
+                $now = new DateTime("now", new DateTimeZone($timezone));
+                $plus10 = new DateTime("+10 minutes", new DateTimeZone($timezone));
+                if(date('D M d Y H:i', strtotime($event->start)) === $now->format('D M d Y H:i')){
                     $data['msg'] = "Hello" . (($data['user']) ? (" ". $data['user']->username) : ('')) . ", event started";
                     Mail::send('Emails.event-notification', $data, function($message) use($data) {
                         $message->to($data['email'], 'Event notification')->subject
@@ -62,8 +67,8 @@ class emailNotification extends Command
                         $message->from(env('MAIL_USERNAME'), env('APP_NAME'));
                     }); 
                 }
-                //info(date('D M d Y H:i', strtotime($event->start)) . " --- " . date('D M d Y H:i', strtotime("+70 minutes")));
-                if(date('D M d Y H:i', strtotime($event->start)) === date('D M d Y H:i', strtotime("+70 minutes"))){
+                //info(date('D M d Y H:i', strtotime($event->start)) . " --- " . $plus10->format('D M d Y H:i'));
+                if(date('D M d Y H:i', strtotime($event->start)) === $plus10->format('D M d Y H:i')){
                     $data['msg'] = "Hello" . (($data['user']) ? (" ". $data['user']->username) : ('')) . ", 10 min to start an event. Get your self ready!";
                     Mail::send('Emails.event-notification', $data, function($message ) use($data) {
                         $message->to($data['email'], 'Event notification')->subject

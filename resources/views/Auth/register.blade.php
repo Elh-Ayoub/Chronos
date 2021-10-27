@@ -79,6 +79,16 @@
             </div>
           </div>
         </div>
+        <div class="form-group row mb-3">
+          <div class="col-sm-12">
+          <select class="form-control custom-select" aria-label="Default select example" name="timezone"> 
+            <option selected disabled>Select timezone</option>
+            @foreach (config('timezones.timezones') as $key => $timezone)
+               <option class="w-100 d-flex justify-content-around" value="{{$key}}"><span>{{$key}} </span>|<span> (GMT {{(($diff = (timezone_offset_get(timezone_open($key), date_create("now", timezone_open("UTC")))) )< 0) ? ("-" . gmdate("H:i", $diff*-1)) : ("+" . gmdate("H:i", $diff))}})</span></option>
+            @endforeach
+          </select>
+          </div>
+        </div>
         <div class="row">
           <!-- /.col -->
           <div class="col-12">

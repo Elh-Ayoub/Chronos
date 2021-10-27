@@ -103,6 +103,17 @@
                                 <input type="text" class="form-control" id="inputfull_name" name="full_name" placeholder="Full name" value="{{$user->full_name}}">
                                 </div>
                             </div>
+                            <div class="form-group row">
+                              <label for="inputfull_time" class="col-sm-2 col-form-label">Timezone</label>
+                              <div class="col-sm-10">
+                              <select class="form-control custom-select" aria-label="Default select example" name="timezone">
+                                <option class="w-100 d-flex justify-content-around" value="{{Auth::user()->timezone}}" selected><span>{{Auth::user()->timezone}} </span>|<span> (GMT {{(($diff = (timezone_offset_get(timezone_open(Auth::user()->timezone), date_create("now", timezone_open("UTC")))) )< 0) ? ("-" . gmdate("H:i", $diff*-1)) : ("+" . gmdate("H:i", $diff))}})</span></option> 
+                                @foreach (config('timezones.timezones') as $key => $timezone)
+                                   <option class="w-100 d-flex justify-content-around" value="{{$key}}"><span>{{$key}} </span>|<span> (GMT {{(($diff = (timezone_offset_get(timezone_open($key), date_create("now", timezone_open("UTC")))) )< 0) ? ("-" . gmdate("H:i", $diff*-1)) : ("+" . gmdate("H:i", $diff))}})</span></option>
+                                @endforeach
+                              </select>
+                              </div>
+                            </div>
                         </form>
                         <div class="form-group d-flex justify-content-between">
                             <div class="offset-sm-2">

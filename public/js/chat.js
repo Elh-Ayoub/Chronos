@@ -10,8 +10,6 @@
     var auth_username = $('.messages-container').data('username');
     var notif_url = $('.messages-container').data('sound');
     const audio = new Audio(notif_url);
-    audio.play();
-    console.log(notif_url);
     var username = data.author.username;
     var date = Date.parse(data.message.created_at)
     var created_at = moment(date).format('YYYY-MM-DD HH:MM:SS');
@@ -32,6 +30,7 @@
             '</div>'+
         '</div>')
     }else{
+        audio.play();
         $('.messages-container').append('<div class="chat-message-left pb-4">'+
             '<div class="mr-2">'+
                 '<img src="' + data.author.profile_photo +'" class="rounded-circle" alt="User-Image" style="border: 1px solid grey;" width="40" height="40"><br>'+

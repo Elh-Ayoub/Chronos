@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
@@ -42,6 +43,8 @@ class UserController extends Controller
             }
         }
         $user->update(array_merge($request->all(), ['profile_photo' => $profile_photo]));
+        // config(['app.timezone' => $request->timezone]);
+        // date_default_timezone_set($request->timezone);
         return back()->with('success', 'Account Updated successfully!');
     }
 

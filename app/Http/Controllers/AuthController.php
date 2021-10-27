@@ -24,6 +24,8 @@ class AuthController extends Controller
         ]);
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+            // config(['app.timezone' => Auth::user()->timezone]);
+            // date_default_timezone_set(Auth::user()->timezone);
             return redirect('/home');
         }
         return back()->with('fail', 'The provided credentials do not match our records.');
@@ -39,6 +41,7 @@ class AuthController extends Controller
             'full_name' => 'required|string|between:5,30',
             'email' => 'required|string|email|max:50|unique:users',
             'password' => 'required|string|confirmed|min:8',
+            'timezone' => 'required|string',
         ]);
         if($validator->fails()){
             return back()->with('fail', json_decode($validator->errors()->toJson()));
