@@ -34,22 +34,22 @@ class MessageController extends Controller
             'content' => 'required|string',
         ]);
         if($validator->fails()){
-            return back()->with('fail-arr', json_decode($validator->errors()->toJson()));
+            return ['fail-arr' => ($validator->errors()->toJson())];
         }
         $chat = Chat::find($id);
         if(!$chat){
-            return back()->with('fail', 'Chat not found!');
+            return ['fail' => 'Chat not found!'];
         }
         $message = Message::create([
             'author' => Auth::id(),
             'content' => $request->content,
             'chat_id' => $id,
         ]);
-        event(new Messages($message));
+        event(new Messages($message, Auth::user()));
         if(!$message){
-            return back()->with('fail', 'Something went wrong!');
+            return ['fail' => 'Something went wrong!'];
         }
-        return back();
+        return ['success' => 'Message sent successfully!'];
     }
 
     /**

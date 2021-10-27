@@ -9,25 +9,12 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="{{asset('plugins/fontawesome-free/css/all.min.css')}}">
-  <link rel="stylesheet" href="{{asset('plugins/fullcalendar/main.css')}}">
   <link rel="stylesheet" href="{{asset('plugins/fontawesome-free/css/all.min.css')}}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{asset('dist/css/adminlte.min.css')}}">
   <link rel="shortcut icon" type="image/x-icon" href="{{ asset('images/logo_transparent.png')}}"/>
   <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
   <link rel="stylesheet" href="{{ asset('css/chat.css') }}">
-  <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
-  <script>
-    // Enable pusher logging - don't include this in production
-    Pusher.logToConsole = true;
-    var pusher = new Pusher('c3e36fa068d72596a233', {
-      cluster: 'eu'
-    });
-    var channel = pusher.subscribe('chat');
-    channel.bind('messages', function(data) {
-      alert(JSON.stringify(data));
-    });
-  </script>
 </head>
 <body class="hold-transition sidebar-collapse layout-top-nav">
 <div class="wrapper">
@@ -51,41 +38,39 @@
         </div>
         <section class="content">
             <div class="container">
-                <div class="d-flex align-items-start flex-row justify-content-start">
-                    <div class="col-sm">
-                        <div class="fixed">
-                            <div class="card" style="width: 18rem;">
-                                {{-- <img class="card-img-top" src="{{$anime->image}}" alt="Card image cap"> --}}
-                                <div class="card-body">
-                                    <h5 class="card-title text-bold text-lg text-center w-100 mb-2">{{$chat->name}}</h5>
-                                    <div class="w-100">
-                                      <span class="text-bold text-muted mr-2">{{"Description :"}}</span><span>{{($chat->description) ? ($chat->description) : ('No description')}}</span>
+                <div class="d-flex align-items-start flex-wrap justify-content-start right-container">
+                    <div class="col-4">
+                        <div class="card" style="width: 18rem;">
+                            {{-- <img class="card-img-top" src="{{$anime->image}}" alt="Card image cap"> --}}
+                            <div class="card-body">
+                                <h5 class="card-title text-bold text-lg text-center w-100 mb-2">{{$chat->name}}</h5>
+                                <div class="w-100">
+                                    <span class="text-bold text-muted mr-2">{{"Description :"}}</span><span>{{($chat->description) ? ($chat->description) : ('No description')}}</span>
+                                </div>
+                                <div class="w-100 mt-2">
+                                    <span class="text-bold text-muted mr-2 ">Participants :</span>
+                                    @foreach ($participants as $participant)
+                                    <div class="row justify-content-lg-start align-items-center mt-1 mb-1 text-primary">
+                                    @if($user = App\Models\User::where('email', $participant)->first())
+                                        <img src="{{$user->profile_photo}}" class="img-sm img-circle mr-2 " alt="User-Image" style="border: 1px solid grey;">
+                                        <span>{{($user->username === Auth::user()->username) ? ("You") : ($user->username)}}</span>
+                                    @else
+                                        <span>{{$participant}}</span>
+                                    @endif
                                     </div>
-                                    <div class="w-100 mt-2">
-                                      <span class="text-bold text-muted mr-2 ">Participants :</span>
-                                      @foreach ($participants as $participant)
-                                      <div class="row justify-content-lg-start align-items-center mt-1 mb-1 text-primary">
-                                        @if($user = App\Models\User::where('email', $participant)->first())
-                                            <img src="{{$user->profile_photo}}" class="img-sm img-circle mr-2 " alt="User-Image" style="border: 1px solid grey;">
-                                            <span>{{($user->username === Auth::user()->username) ? ("You") : ($user->username)}}</span>
-                                        @else
-                                            <span>{{$participant}}</span>
-                                        @endif
-                                      </div>
-                                      @endforeach
-                                    </div>
+                                    @endforeach
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="w-100">
+                    <div class="col-lg-8">
                         <div class="card">
                           <div class="card-header p-2">
                             <h3>{{$event->title}}</h3>
                           </div>
                         </div>
-                        <div class="card col-12 col-lg-7 col-xl-12">
-                            <div class="card-body position-relative" style="max-height: 800px; overflow-y: scroll;">
+                        <div class="card col-12 col-xl-12">
+                            <div class="card-body position-relative messages-container" data-auth="{{Auth::id()}}" data-username="{{Auth::user()->username}}"  data-sound="{{asset('notification/notification.mp3')}}" style="max-height: 800px; overflow-y: scroll;">
                                 @foreach ($messages as $message)
                                 <div class="chat-messages p-1">
                                     @if(App\Models\User::find($message->author)->username === Auth::user()->username)
@@ -118,13 +103,13 @@
                                 </div>
                                 @endforeach
                             </div>
-                            <form method="POST" action="{{route('send.message', $chat->id)}}" class="d-flex align-items-center justify-content-center input-group" style="border: 1px solid grey">
+                            <form onsubmit="submitMessageSender();return false" action="#" data-action="{{route('send.message', $chat->id)}}" class="form-msg d-flex align-items-center justify-content-center input-group" style="border: 1px solid grey">
                                 @csrf
                                 <div class="input-group-prepend">
                                     <label for="attach-file" class="ml-2 pr-1 mt-2"><i class="fas fa-paperclip"></i></label>
                                     <input type="file" id="attach-file" class="d-none">
                                 </div>
-                                <input class="form-control" type="text" name="content" placeholder="Type a message ..." style="border: none">
+                                <input class="form-control content-msg" type="text" name="content" placeholder="Type a message ..." style="border: none">
                                 <button class="btn btn-secondary"><i class="fas fa-paper-plane"></i></button>
                             </form>
                         </div>
@@ -174,10 +159,10 @@
 <script src="{{asset('dist/js/adminlte.min.js')}}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{asset('plugins/moment/moment.min.js')}}"></script>
-<script src="{{asset('plugins/fullcalendar/main.js')}}"></script>
 <script src="{{asset('dist/js/demo.js')}}"></script>
-<script src="{{asset('js/calendar.js')}}"></script>
 <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
+<script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+<script src="{{asset('js/chat.js')}}"></script>
 @if(Session::get('fail'))
 <script>
   $(function() {

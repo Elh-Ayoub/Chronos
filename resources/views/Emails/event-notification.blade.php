@@ -9,7 +9,7 @@
             <p style="display: flex; justify-content: space-between; font-size: medium;"><strong>Event description :</strong><span>{{($event->description) ? ($calendar->description) : ("No description")}}</span></p>
         </div>
         <p>To go to event chat:</p>
-        <a href="#" style="padding: 10px 15px; background-color: #2d529d; color: white; text-align: center; border-radius: 15px; font-size: 18px; margin-top: 10px; text-decoration: none;">Event Chat</a>    
+        <a href="{{route('events.chatroom', $event->id)}}" style="padding: 10px 15px; background-color: #2d529d; color: white; text-align: center; border-radius: 15px; font-size: 18px; margin-top: 10px; text-decoration: none;">Event Chat</a>    
     </div>
     <div style="padding: 10px;">
         <p class="text-bold">Event created by: </p>
