@@ -45,7 +45,7 @@
                             <div class="card-body">
                                 <h5 class="card-title text-bold text-lg text-center w-100 mb-2">{{$chat->name}}</h5>
                                 <div class="w-100">
-                                    <span class="text-bold text-muted mr-2">{{"Description :"}}</span><span>{{($chat->description) ? ($chat->description) : ('No description')}}</span>
+                                    <span class="text-bold text-muted mr-2">{{"Description: "}}</span><span>{{($event->description) ? ($event->description) : ('No description')}}</span>
                                 </div>
                                 <div class="w-100 mt-2">
                                     <span class="text-bold text-muted mr-2 ">Participants :</span>
@@ -79,9 +79,16 @@
                                             <img src="{{App\Models\User::find($message->author)->profile_photo}}" class="rounded-circle" alt="User-Image" style="border: 1px solid grey;" width="40" height="40"><br>
                                         </div>
                                         <div class="flex-shrink-1 rounded py-2 px-3 mr-3" style="background: rgba(174, 198, 221, 0.616)">
-                                            <div>
-                                                <span class="font-weight-bold mb-1 mr-2 text-center">{{(App\Models\User::find($message->author)->username === Auth::user()->username) ? ("You") : (App\Models\User::find($message->author)->username)}}</span>
-                                                <span class="text-muted small mt-2">{{$message->created_at}}</span>
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <span class="font-weight-bold mb-1 mr-2 text-center">{{(App\Models\User::find($message->author)->username === Auth::user()->username) ? ("You") : (App\Models\User::find($message->author)->username)}}</span>
+                                                    <span class="text-muted small mt-2 convert_by_timezone" data-timezone="{{Auth::user()->timezone}}" data-timezone="{{Auth::user()->timezone}}" data-offset="{{(timezone_offset_get(timezone_open(Auth::user()->timezone), date_create($message->created_at, timezone_open("UTC"))))}}">{{$message->created_at}}</span>   
+                                                </div>
+                                                <a class="link-muted dropdown-toggle p-1" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item edit-msg-btn" id="edit-{{$message->id}}" onClick="edit_msg_btn({{$message->id}})" data-content="{{$message->content}}" data-action="{{route('update.message', $message->id)}}" href="#input_msg">Edit</a>
+                                                    <a class="dropdown-item" id="delete-{{$message->id}}" onclick="delete_msg_btn({{$message->id}})" data-action="{{route('delete.message', $message->id)}}" href="#">Delete</a>
+                                                </div>
                                             </div>
                                             <p>{{$message->content}}</p>
                                         </div>
@@ -94,7 +101,7 @@
                                         <div class="flex-shrink-1 rounded py-2 px-3 mr-3" style="background: rgba(128, 128, 128, 0.534)">
                                             <div>
                                                 <span class="font-weight-bold mb-1 mr-2 text-center">{{(App\Models\User::find($message->author)->username === Auth::user()->username) ? ("You") : (App\Models\User::find($message->author)->username)}}</span>
-                                                <span class="text-muted small mt-2">{{$message->created_at}}</span>
+                                                <span class="text-muted small mt-2 convert_by_timezone" data-timezone="{{Auth::user()->timezone}}" data-offset="{{(timezone_offset_get(timezone_open(Auth::user()->timezone), date_create($message->created_at, timezone_open("UTC"))))}}">{{$message->created_at}}</span>
                                             </div>
                                             <p>{{$message->content}}</p>
                                         </div>
@@ -109,40 +116,11 @@
                                     <label for="attach-file" class="ml-2 pr-1 mt-2"><i class="fas fa-paperclip"></i></label>
                                     <input type="file" id="attach-file" class="d-none">
                                 </div>
-                                <input class="form-control content-msg" type="text" name="content" placeholder="Type a message ..." style="border: none">
-                                <button class="btn btn-secondary"><i class="fas fa-paper-plane"></i></button>
+                                <input class="form-control content-msg" id="input_msg" type="text" name="content" placeholder="Type a message ..." style="border: none">
+                                <button class="btn btn-secondary btn-send"><i class="fas fa-paper-plane"></i></button>
                             </form>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="modal fade" id="modal-create-calendar">
-                <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Create calendar</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <form action="{{route('calendars.create')}}" method="POST">
-                        @csrf
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="name">Name</label>
-                                <input type="text" id="name" name="name" class="form-control" maxlength="100">
-                            </div>
-                            <div class="form-group">
-                                <label for="description">Description</label>
-                                <textarea id="description" name="description" class="form-control" maxlength="200"></textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer justify-content-between">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Create</button>
-                        </div>
-                    </form>
-                </div>
                 </div>
             </div>
         </section>
@@ -163,6 +141,16 @@
 <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
 <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
 <script src="{{asset('js/chat.js')}}"></script>
+<script>
+    // $('.convert_by_timezone').each(function(i, obj){
+    //     var timezone = $(obj).data('timezone')
+    //     var date = new Date(($(obj).html()))
+    //     //console.log(date);
+    //     var offset = $(obj).data('offset') / 3600
+    //     //console.log(offset);
+    //     //$(obj).html(date.getMonth() + "-" + date.getDay() + "-" + date.getFullYear() + " " + (date.getHours() + offset) + ":" + date.getMinutes()+ ":" + date.getSeconds()) 
+    // })
+</script>
 @if(Session::get('fail'))
 <script>
   $(function() {

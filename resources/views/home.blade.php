@@ -139,7 +139,7 @@
                     <div class="card card-primary">
                     <div class="card-body p-0">
                         <!-- THE CALENDAR -->
-                        <div id="calendar" data-events="{{json_encode($events)}}"></div>
+                        <div id="calendar" data-timezone="{{Auth::user()->timezone}}" data-events="{{json_encode($events)}}"></div>
                     </div>
                     </div>
                 </div>
@@ -184,6 +184,14 @@
                            ' </select>'+
                             '<button class="btn btn-danger" onClick="$(this).parent().remove();"><i class="fas fa-trash"></i></button></div>')
     }
+    $(".limit_description").text(function (i, t) {
+    if(t.length > 80){
+        return t.substring(0, 80) + "...";
+    }else{
+        return t;
+    }
+    
+}); 
 </script>
 @if(Session::get('fail'))
 <script>

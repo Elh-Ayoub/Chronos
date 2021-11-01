@@ -39,6 +39,7 @@ $(function () {
       }
     );
     var events = renderEvent();
+    var timezone = $('#calendar').data('timezone')
     $("#showHolidays").change(function() {
       if(this.checked) {
           var countryCode = getCountryCode($('#countryCode').html())
@@ -72,8 +73,8 @@ $(function () {
       var endDate = new Date($(obj).data('end'))
       var allday = $(obj).data('allday')
       if(allday !== true){
-        var today = new Date()
-        var diff2dates = endDate - new Date(today.toString());
+        var today = new Date().toLocaleString({ timeZone: timezone }).replace(',', '')
+        var diff2dates = endDate - new Date(today);
         var diffStr
         if(diff2dates > 0){
           diffStr = 'remaining'

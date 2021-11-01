@@ -78,22 +78,41 @@ class MessageController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Message  $message
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Message $message)
+    public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'content' => 'required|string',
+        ]);
+        if($validator->fails()){
+            return ['fail-arr' => ($validator->errors()->toJson())];
+        }
+        $message = Message::find($id);
+        if(!$message){
+            return ['fail' => 'Message requested not found!'];
+        }
+        $message->update([
+            'content' => $request->content,
+        ]);
+        return ['success' => 'Message updated successfully!'];
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Message  $message
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Message $message)
+    public function destroy($id)
     {
-        //
+        $message = Message::find($id);
+        if(!$message){
+            return ['fail' => 'Message requested not found!'];
+        }else{
+            $message->delete();
+            return ['success' => 'Message deleted successfully!'];
+        }
     }
 }

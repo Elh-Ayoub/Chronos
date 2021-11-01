@@ -41,12 +41,12 @@
                 <button class="btn btn-primary mb-2" data-toggle="modal" data-target="#modal-create-calendar"><i class="fas fa-plus mr-2"></i>Create calendar</button>
                 <div class="row">
                     @foreach($calendars as $calendar)
-                    <div class="col-lg-3 col-6">
+                    <div class="col-12 col-md-6 d-flex align-items-stretch flex-column">
                         <!-- small box -->
                         <div class="small-box bg-gradient-lightblue">
                             <div class="inner">
                                 <h3>{{$calendar->name}}</h3>
-                                <p>{{$calendar->description ? ($calendar->description) : ("No description")}}</p>
+                                <p class="limit_desc">{{$calendar->description ? ($calendar->description) : ("No description")}}</p>
                             </div>
                             <div class="icon">
                                 <i class="far fa-calendar-alt"></i>
@@ -123,6 +123,15 @@
 <script src="{{asset('dist/js/demo.js')}}"></script>
 <script src="{{asset('js/calendar.js')}}"></script>
 <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
+<script>
+    $(".limit_desc").text(function (i, t) {
+        if(t.length > 30){
+            return t.substring(0, 30) + "...";
+        }else{
+            return t;
+        }
+    })
+</script>
 @if(Session::get('fail'))
 <script>
   $(function() {
