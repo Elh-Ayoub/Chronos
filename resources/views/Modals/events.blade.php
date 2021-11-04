@@ -12,7 +12,7 @@
                 <p class="row justify-content-between text-md"><span class="text-bold">Description :</span><span class="limit_description">{{($event->description) ? ($event->description) : ("No description")}}</span></p>
                 <p class="row justify-content-between text-md"><span class="text-bold">Start at :</span><span id="event-start-at">{{$event->start}}</span></p>
                 <p class="row justify-content-between text-md"><span class="text-bold">End at :</span><span id="event-end-at">{{($event->end) ? ($event->end) : ("No end date specified")}}</span></p>
-                <p class="row justify-content-between text-md"><span class="text-bold">All day event :</span><span>{{($event->allDay) ? ($event->allDay) : ("false")}}</span></p>
+                <p class="row justify-content-between text-md"><span class="text-bold">All day event :</span><span id="event-all-day">{{($event->allDay) ? ($event->allDay) : ("false")}}</span></p>
                 <p class="row justify-content-between text-md"><span class="text-bold">Category :</span><span>{{$event->category}}</span></p>
             </div>
             @if($event->user_id === Auth::id() || $calendar->user_id === Auth::id() || (App\Models\Sharing::where(['target'=>'calendar', 'target_id'=>$calendar->id, 'shared_to_email' => Auth::user()->email, 'shared_to_role' => 'admin'])->first()))

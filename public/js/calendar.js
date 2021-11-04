@@ -76,28 +76,33 @@ $(function () {
       $('.time-remaining').each(function(i, obj){
         var endDate = new Date($(obj).data('end'))
         var allday = $(obj).data('allday')
+        
         if(allday !== true){
-          var today = new Date().toLocaleString({ timeZone: timezone }).replace(',', '')
-          var diff2dates = endDate - new Date(today);
-          var diffStr
-          if(diff2dates > 0){
-            diffStr = 'remaining'
+          if(!$(obj).data('end')){
+            $(obj).html("No end date specified");
           }else{
-            diffStr = 'ago'
+            var today = new Date().toLocaleString({ timeZone: timezone }).replace(',', '')
+            var diff2dates = endDate - new Date(today);
+            var diffStr
+            if(diff2dates > 0){
+              diffStr = 'remaining'
+            }else{
+              diffStr = 'ago'
+            }
+            let diffInMilliSeconds = Math.abs(diff2dates) / 1000;
+            // calculate days
+            const days = Math.floor(diffInMilliSeconds / 86400);
+            diffInMilliSeconds -= days * 86400;
+            // calculate hours
+            const hours = Math.floor(diffInMilliSeconds / 3600) % 24;
+            diffInMilliSeconds -= hours * 3600;
+            // calculate minutes
+            const minutes = Math.floor(diffInMilliSeconds / 60) % 60;
+            diffInMilliSeconds -= minutes * 60;
+            //
+            var finalStr = ((days !== 0) ? (days + "d ") : ('')) + ((hours !== 0) ? (hours + "h ") : ('')) + ((minutes !== 0) ? (minutes + "min") : (''))
+            $(obj).html(finalStr + " " + diffStr);
           }
-          let diffInMilliSeconds = Math.abs(diff2dates) / 1000;
-          // calculate days
-          const days = Math.floor(diffInMilliSeconds / 86400);
-          diffInMilliSeconds -= days * 86400;
-          // calculate hours
-          const hours = Math.floor(diffInMilliSeconds / 3600) % 24;
-          diffInMilliSeconds -= hours * 3600;
-          // calculate minutes
-          const minutes = Math.floor(diffInMilliSeconds / 60) % 60;
-          diffInMilliSeconds -= minutes * 60;
-          //
-          var finalStr = ((days !== 0) ? (days + "d ") : ('')) + ((hours !== 0) ? (hours + "h ") : ('')) + ((minutes !== 0) ? (minutes + "min") : (''))
-          $(obj).html(finalStr + " " + diffStr);
         }else{
           $(obj).html("All day event");
         }
@@ -156,9 +161,10 @@ function renderCalendar(events){
     },
     eventClick: function(info){
       $('#event-details-' + info.event.id + ' .modal-body #event-start-at').text(new Date(info.event.start).toLocaleString())
-      if(!info.event.allDay){
+      if(!info.event.allDay && info.event.end){
         $('#event-details-' + info.event.id + ' .modal-body #event-end-at').text(new Date(info.event.end).toLocaleString())
       }
+      $('#event-details-' + info.event.id + ' .modal-body #event-all-day').text(info.event.allDay)
       $('#event-details-' + info.event.id).modal('show');
       console.log(info.event);
     },
