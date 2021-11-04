@@ -42,11 +42,13 @@ $(function () {
     var timezone = $('#calendar').data('timezone')
     $("#showHolidays").change(function() {
       if(this.checked) {
+          $('input[name=ShowCategories]').prop('checked', false);
           var countryCode = getCountryCode($('#countryCode').html())
           holidays = {googleCalendarId: countryCode}
           renderCalendar(holidays)
       }
       else{
+        $('input[name=ShowCategories]').prop('checked', true);
         var events = $('#calendar').data('events');
         events.map(event => {
           event.start = new Date(Date.parse(event.start))
@@ -59,6 +61,7 @@ $(function () {
       }
     })
     $("input[name=ShowCategories]").change(function(){
+      $('#showHolidays').prop('checked', false);
       var events = $('#calendar').data('events');
         events.map(event => {
           event.start = new Date(Date.parse(event.start))
@@ -69,40 +72,46 @@ $(function () {
         events = limitCategories(events);
         renderCalendar(events);
     })
-    $('.time-remaining').each(function(i, obj){
-      var endDate = new Date($(obj).data('end'))
-      var allday = $(obj).data('allday')
-      if(allday !== true){
-        var today = new Date().toLocaleString({ timeZone: timezone }).replace(',', '')
-        var diff2dates = endDate - new Date(today);
-        var diffStr
-        if(diff2dates > 0){
-          diffStr = 'remaining'
+    function Calculate_remainig_time(){
+      $('.time-remaining').each(function(i, obj){
+        var endDate = new Date($(obj).data('end'))
+        var allday = $(obj).data('allday')
+        if(allday !== true){
+          var today = new Date().toLocaleString({ timeZone: timezone }).replace(',', '')
+          var diff2dates = endDate - new Date(today);
+          var diffStr
+          if(diff2dates > 0){
+            diffStr = 'remaining'
+          }else{
+            diffStr = 'ago'
+          }
+          let diffInMilliSeconds = Math.abs(diff2dates) / 1000;
+          // calculate days
+          const days = Math.floor(diffInMilliSeconds / 86400);
+          diffInMilliSeconds -= days * 86400;
+          // calculate hours
+          const hours = Math.floor(diffInMilliSeconds / 3600) % 24;
+          diffInMilliSeconds -= hours * 3600;
+          // calculate minutes
+          const minutes = Math.floor(diffInMilliSeconds / 60) % 60;
+          diffInMilliSeconds -= minutes * 60;
+          //
+          var finalStr = ((days !== 0) ? (days + "d ") : ('')) + ((hours !== 0) ? (hours + "h ") : ('')) + ((minutes !== 0) ? (minutes + "min") : (''))
+          $(obj).html(finalStr + " " + diffStr);
         }else{
-          diffStr = 'ago'
+          $(obj).html("All day event");
         }
-        let diffInMilliSeconds = Math.abs(diff2dates) / 1000;
-        // calculate days
-        const days = Math.floor(diffInMilliSeconds / 86400);
-        diffInMilliSeconds -= days * 86400;
-        // calculate hours
-        const hours = Math.floor(diffInMilliSeconds / 3600) % 24;
-        diffInMilliSeconds -= hours * 3600;
-        // calculate minutes
-        const minutes = Math.floor(diffInMilliSeconds / 60) % 60;
-        diffInMilliSeconds -= minutes * 60;
-        //
-        var finalStr = ((days !== 0) ? (days + "d ") : ('')) + ((hours !== 0) ? (hours + "h ") : ('')) + ((minutes !== 0) ? (minutes + "min") : (''))
-        $(obj).html(finalStr + " " + diffStr);
-      }else{
-        $(obj).html("All day event");
-      }
-    })
+      })
+    }
+    Calculate_remainig_time()
     renderCalendar(events);
-})
 
-function renderEvent(){
-  var events = $('#calendar').data('events');
+
+function renderEvent(events = null){
+  if(!events){
+    var events = $('#calendar').data('events');
+  }
+  $('.todo-list').empty()
   events.map(event => {
     event.start = new Date(Date.parse(event.start))
     if(event.end){
@@ -119,6 +128,7 @@ function renderEvent(){
     }
   });
   events = limitCategories(events);
+  Calculate_remainig_time()
   return events;
 }
 function renderCalendar(events){
@@ -135,7 +145,7 @@ function renderCalendar(events){
     themeSystem: 'bootstrap',
     events: events,
 
-    editable  : false,
+    editable  : true,
     droppable : false,
     weekNumbers: true,
     weekNumberCalculation: 'ISO',
@@ -145,9 +155,19 @@ function renderCalendar(events){
       var date = new Date(Date.parse(info.dateStr))
     },
     eventClick: function(info){
-      // alert('Event: ' + info.event.title + "desc: " + info.event.id);
+      $('#event-details-' + info.event.id + ' .modal-body #event-start-at').text(new Date(info.event.start).toLocaleString())
+      if(!info.event.allDay){
+        $('#event-details-' + info.event.id + ' .modal-body #event-end-at').text(new Date(info.event.end).toLocaleString())
+      }
       $('#event-details-' + info.event.id).modal('show');
+      console.log(info.event);
     },
+    eventDrop: function(info){
+      update_event(info.event)
+    },
+    eventResize: function(info){
+      update_event(info.event)
+    }
   });
   calendar.render();
 }
@@ -166,9 +186,6 @@ $('#event-search').keyup(function(){
     $('#search-results').empty() 
   }
 })
-function showEvent(id){
-  $('#event-details-' + id ).modal('show')
-}
 
 function limitCategories(events){
   let categories = ['Arrangement', 'Reminder', 'Task'];
@@ -185,4 +202,53 @@ function limitCategories(events){
     }
   })
   return newEvents;
+}
+
+function update_event(event){
+  var getUrl = window.location;
+  var baseUrl = getUrl .protocol + "//" + getUrl.host;
+  var url = baseUrl + "/api/events/"+event.id
+  $.ajax({
+    method: "PATCH",
+    url: url,
+    data: { 
+      title: event.title,
+      start: new Date(event.start).toLocaleString().replace(',', ''),
+      end: (event.end) ? (new Date(event.end).toLocaleString().replace(',', '')) : (null),
+      backgroundColor: event.backgroundColor,
+      borderColor: event.borderColor,
+      allDay: event.allDay,
+      name: null,
+    },
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+  }).done(function(msg){
+    fetsh4events()
+    // location.reload();
+  });
+}
+
+function fetsh4events(){
+  cal_id = $('#calendar').data('calid')
+  var n_events
+  var getUrl = window.location;
+  var baseUrl = getUrl .protocol + "//" + getUrl.host;
+  var url = baseUrl + "/api/calendar/"+cal_id+"/events"
+  $.ajax({
+    method: "GET",
+    url: url,
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+  }).done(function(events){
+    n_events = events
+    renderEvent(n_events)
+  });
+  return n_events
+}
+})
+
+function showEvent(id){
+  $('#event-details-' + id ).modal('show')
 }

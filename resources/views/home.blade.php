@@ -99,7 +99,7 @@
                                 @foreach ($watchers as $user)
                                 <div class="row justify-content-between align-items-center align-content-center mt-2 w-75 ml-auto mr-auto">
                                     <div class="row justify-content-lg-start align-items-center">
-                                        <img src="{{$user['user']->profile_photo}}" class="img-sm img-circle mr-2 " alt="User-Image" style="border: 1px solid grey;">
+                                        <img src="{{$user['user']->profile_photo}}" class="img-sm img-circle mr-2 " alt="" style="border: 1px solid grey;">
                                         <span>{{($user['user']->username === Auth::user()->username) ? ("You") : ($user['user']->username)}}</span>
                                         <span class="small ml-1">({{$user['role']}})</span>  
                                     </div>
@@ -139,7 +139,7 @@
                     <div class="card card-primary">
                     <div class="card-body p-0">
                         <!-- THE CALENDAR -->
-                        <div id="calendar" data-timezone="{{Auth::user()->timezone}}" data-events="{{json_encode($events)}}"></div>
+                        <div id="calendar" data-timezone="{{Auth::user()->timezone}}" data-calid="{{$calendar->id}}" data-events="{{json_encode($events)}}"></div>
                     </div>
                     </div>
                 </div>

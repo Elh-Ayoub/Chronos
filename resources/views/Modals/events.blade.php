@@ -10,8 +10,8 @@
             <div class="modal-body w-75 m-auto">
                 <p class="row justify-content-between text-md"><span class="text-bold">Title :</span><span>{{$event->title}}</span></p>
                 <p class="row justify-content-between text-md"><span class="text-bold">Description :</span><span class="limit_description">{{($event->description) ? ($event->description) : ("No description")}}</span></p>
-                <p class="row justify-content-between text-md"><span class="text-bold">Start at :</span><span>{{$event->start}}</span></p>
-                <p class="row justify-content-between text-md"><span class="text-bold">End at :</span><span>{{($event->end) ? ($event->end) : ("No end date specified")}}</span></p>
+                <p class="row justify-content-between text-md"><span class="text-bold">Start at :</span><span id="event-start-at">{{$event->start}}</span></p>
+                <p class="row justify-content-between text-md"><span class="text-bold">End at :</span><span id="event-end-at">{{($event->end) ? ($event->end) : ("No end date specified")}}</span></p>
                 <p class="row justify-content-between text-md"><span class="text-bold">All day event :</span><span>{{($event->allDay) ? ($event->allDay) : ("false")}}</span></p>
                 <p class="row justify-content-between text-md"><span class="text-bold">Category :</span><span>{{$event->category}}</span></p>
             </div>

@@ -38,12 +38,6 @@
                     <p>My Calendars</p>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="" class="nav-link">
-                    <i class="fas fa fa-list-alt"></i>
-                    <p>Manage Categories</p>
-                </a>
-            </li>
             </ul>
         </nav>
     </div>

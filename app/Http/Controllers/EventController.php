@@ -129,7 +129,7 @@ class EventController extends Controller
             'title' => 'required|string',
             'description' => 'max:500',
             'start' => 'required|string',
-            'backgroundColor' =>'required|string',
+            'start' =>'required|string',
             'borderColor' =>'required|string',
         ]);
         $event = Event::find($id);
