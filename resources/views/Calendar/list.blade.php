@@ -60,12 +60,12 @@
                 <h3>Shared with me</h3>
                 <div class="row">
                     @foreach ($sharedCal as $calendar)
-                    <div class="col-lg-3 col-6">
+                    <div class="col-12 col-md-6 d-flex align-items-stretch flex-column">
                         <!-- small box -->
                         <div class="small-box bg-gradient-lightblue">
                             <div class="inner">
                                 <h3>{{$calendar->name}}</h3>
-                                <p>{{$calendar->description ? ($calendar->description) : ("No description")}}</p>
+                                <p class="limit_desc">{{$calendar->description ? ($calendar->description) : ("No description")}}</p>
                             </div>
                             <div class="icon">
                                 <i class="far fa-calendar-alt"></i>
