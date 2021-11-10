@@ -108,6 +108,7 @@ Route::group([
 
     //////////////////// ----------Event chat module----------  ////////////////////
     Route::get('/event/{id}/chat', [ChatController::class, 'show'])->name('events.chatroom');
+    Route::patch('/chat/{id}', [ChatController::class, 'update'])->name('update.chat');
     Route::post('/chat/{id}/send', [MessageController::class, 'store'])->name('send.message');
     Route::patch('/message/{id}', [MessageController::class, 'update'])->name('update.message');
     Route::delete('/message/{id}', [MessageController::class, 'destroy'])->name('delete.message');

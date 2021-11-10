@@ -24,15 +24,16 @@
         <div class="content-header">
             <div class="container">
                 <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1 class="m-0">{{$chat->name}}</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Home</a></li>
-                    <li class="breadcrumb-item"><a href="#">{{$event->title}} - Chat</a></li>
-                    </ol>
-                </div>
+                    <div class="col-sm-6 d-flex align-items-center">
+                        <h1 class="m-0" id="chat-name">{{$chat->name}}</h1>
+                        <a href="#" class="link-muted" data-action="{{route('update.chat', $chat->id)}}" id="edit-chat-name" type="button"><i class="fas fa-pen ml-2"></i></a>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="#">{{$event->title}} - Chat</a></li>
+                        </ol>
+                    </div>
                 </div>
             </div>
         </div>

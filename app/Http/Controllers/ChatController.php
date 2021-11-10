@@ -10,16 +10,6 @@ use Illuminate\Http\Request;
 class ChatController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param int $id -- (Event id) --
@@ -43,26 +33,20 @@ class ChatController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Chat  $chat
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Chat $chat)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Chat  $chat
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Chat $chat)
+    public function update(Request $request, $id)
     {
-        //
+        $chat = Chat::find($id);
+        if(!$chat){
+            return ['fail' => 'Chatroom not found!'];
+        }
+        $chat->update($request->all());
+        return ['success' => 'Chat room updated successfully!'];
     }
 
     /**

@@ -158,3 +158,28 @@ function isValidURL(str){
     }
     return url.protocol === "http:" || url.protocol === "https:";
 }
+var check = true
+$("#edit-chat-name").on('click', function(){
+    let current_val = $('#chat-name').html()
+    if(check){
+        $('#chat-name').html('<input class="form-control w-auto" id="input-chat-name" type="text" value="' + current_val +'">')
+        $(this).html('save')
+        $(this).addClass('btn btn-warning ml-2 save-changes')
+        $(this).attr("onclick","saveChanges()")
+        check = false
+    }
+    
+})
+function saveChanges(){
+    var url = $('.save-changes').data('action')
+    $.ajax({
+        method: "PATCH",
+        url: url,
+        data: { name: $("#input-chat-name").val() },
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    }).done(function( msg ) {
+        location.reload();
+    });
+}
