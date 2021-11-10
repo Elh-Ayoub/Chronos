@@ -8,6 +8,7 @@ use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\File;
 
 class MessageController extends Controller
 {
@@ -30,22 +31,40 @@ class MessageController extends Controller
      */
     public function store(Request $request, $id)
     {
-        $validator = Validator::make($request->all(), [
-            'content' => 'required|string',
-        ]);
-        if($validator->fails()){
-            return ['fail-arr' => ($validator->errors()->toJson())];
+        
+        if(!$request->content && !$request->file('attachedFile')){
+            return ['fail' =>  "Content or file are required!"];
         }
         $chat = Chat::find($id);
         if(!$chat){
             return ['fail' => 'Chat not found!'];
         }
-        $message = Message::create([
-            'author' => Auth::id(),
-            'content' => $request->content,
-            'chat_id' => $id,
-        ]);
-        event(new Messages($message, Auth::user()));
+        // to send simple msg
+        if($request->content && $request->content != "null"){
+            $message = Message::create([
+                'author' => Auth::id(),
+                'content' => $request->content,
+                'chat_id' => $id,
+            ]);
+            event(new Messages($message, Auth::user()));
+        }
+        // to send file
+        if($request->file('attachedFile') && $request->attachedFile != "null"){
+            foreach($request->file('attachedFile') as $file){
+                $url  = "";
+                $fileName = str_replace(' ', '-', $file->getClientOriginalName());
+                $ufile = $file->store('public');
+                $ufile1 = $file->move(public_path('/chatrooms-files/' . $id), $fileName);
+                $url = url('/chatrooms-files/' . $id. '/' . $fileName);
+                $message = Message::create([
+                    'author' => Auth::id(),
+                    'content' => $url,
+                    'chat_id' => $id,
+                ]);
+                event(new Messages($message, Auth::user()));  
+            }
+            
+        }
         if(!$message){
             return ['fail' => 'Something went wrong!'];
         }
@@ -111,8 +130,13 @@ class MessageController extends Controller
         if(!$message){
             return ['fail' => 'Message requested not found!'];
         }else{
+            if (filter_var($message->content, FILTER_VALIDATE_URL)){
+                $arr = explode('/', parse_url($message->content, PHP_URL_PATH));
+                $filename = $arr[count($arr) - 1];
+                File::delete(public_path('/chatrooms-files/' . $message->chat_id . '/'.$filename));
+            }
             $message->delete();
-            return ['success' => 'Message deleted successfully!'];
+            return ['success' => 'Message deleted successfully! '];
         }
     }
 }

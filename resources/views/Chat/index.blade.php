@@ -86,11 +86,15 @@
                                                 </div>
                                                 <a class="link-muted dropdown-toggle p-1" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
                                                 <div class="dropdown-menu">
-                                                    <a class="dropdown-item edit-msg-btn" id="edit-{{$message->id}}" onClick="edit_msg_btn({{$message->id}})" data-content="{{$message->content}}" data-action="{{route('update.message', $message->id)}}" href="#input_msg">Edit</a>
+                                                    <a class="dropdown-item edit-msg-btn @if (filter_var($message->content, FILTER_VALIDATE_URL)) d-none @endif" id="edit-{{$message->id}}" onClick="edit_msg_btn({{$message->id}})" data-content="{{$message->content}}" data-action="{{route('update.message', $message->id)}}" href="#input_msg">Edit</a>
                                                     <a class="dropdown-item" id="delete-{{$message->id}}" onclick="delete_msg_btn({{$message->id}})" data-action="{{route('delete.message', $message->id)}}" href="#">Delete</a>
                                                 </div>
                                             </div>
-                                            <p>{{$message->content}}</p>
+                                            @if (filter_var($message->content, FILTER_VALIDATE_URL))
+                                              <p class="message-content"><a href="{{$message->content}}" target="_blank">{{($arr = explode('/', parse_url($message->content, PHP_URL_PATH)))  ? ($arr[count($arr) -1]) : ("File")}}</a></p> 
+                                            @else
+                                                <p class="message-content">{{$message->content}}</p>
+                                            @endif
                                         </div>
                                     </div>
                                     @else
@@ -103,18 +107,22 @@
                                                 <span class="font-weight-bold mb-1 mr-2 text-center">{{(App\Models\User::find($message->author)->username === Auth::user()->username) ? ("You") : (App\Models\User::find($message->author)->username)}}</span>
                                                 <span class="text-muted small mt-2 convert_by_timezone" data-timezone="{{Auth::user()->timezone}}" data-offset="{{(timezone_offset_get(timezone_open(Auth::user()->timezone), date_create($message->created_at, timezone_open("UTC"))))}}">{{$message->created_at}}</span>
                                             </div>
-                                            <p>{{$message->content}}</p>
+                                            @if (filter_var($message->content, FILTER_VALIDATE_URL))
+                                              <p class="message-content"><a href="{{$message->content}}">File</a></p> 
+                                            @else
+                                                <p class="message-content">{{$message->content}}</p>
+                                            @endif
                                         </div>
                                     </div>
                                     @endif
                                 </div>
                                 @endforeach
                             </div>
-                            <form onsubmit="submitMessageSender();return false" action="#" data-action="{{route('send.message', $chat->id)}}" class="form-msg d-flex align-items-center justify-content-center input-group" style="border: 1px solid grey">
+                            <form id="sendMessageForm" data-action="{{route('send.message', $chat->id)}}" class="form-msg d-flex align-items-center justify-content-center input-group" style="border: 1px solid grey">
                                 @csrf
                                 <div class="input-group-prepend">
-                                    <label for="attach-file" class="ml-2 pr-1 mt-2"><i class="fas fa-paperclip"></i></label>
-                                    <input type="file" id="attach-file" class="d-none">
+                                    <label for="attach-file" class="ml-2 pr-1 mt-2"><i class="fas fa-paperclip attach-file-icon"></i></label>
+                                    <input type="file" id="attach-file" name="attachedFile[]" class="d-none" multiple>
                                 </div>
                                 <input class="form-control content-msg" id="input_msg" type="text" name="content" placeholder="Type a message ..." style="border: none">
                                 <button class="btn btn-secondary btn-send"><i class="fas fa-paper-plane"></i></button>

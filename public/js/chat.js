@@ -18,6 +18,15 @@
     if(data.author.username === auth_username){
         username = "You"
     }
+    var msgContent, display_none;
+    if(isValidURL(data.message.content)) {
+        let arr = data.message.content.split('/')
+        display_none = "d-none"
+        msgContent = '<a href="'+data.message.content +'" target="_blank">' + arr[arr.length - 1] +'</a>'
+    }else{
+        display_none = ""
+        msgContent = data.message.content
+    }
     if(auth_id == data.message.author){
         $('.messages-container').append('<div class="chat-message-right pb-4">'+
             '<div>'+
@@ -31,11 +40,11 @@
                     '</div>'+
                     '<a class="link-muted dropdown-toggle p-1" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>'+
                     '<div class="dropdown-menu">'+
-                        '<a class="dropdown-item edit-msg-btn" id="edit-' + data.message.id +'" onClick="edit_msg_btn(' +data.message.id + ')" data-content="' + data.message.content +'" data-action="' + (baseUrl+ "/message/" + data.message.id) +'" href="#input_msg">Edit</a>'+
-                        '<a class="dropdown-item" href="#">Delete</a>'+
+                        '<a class="dropdown-item edit-msg-btn ' + display_none + '" id="edit-' + data.message.id +'" onClick="edit_msg_btn(' +data.message.id + ')" data-content="' + data.message.content +'" data-action="' + (baseUrl+ "/message/" + data.message.id) +'" href="#input_msg">Edit</a>'+
+                        '<a class="dropdown-item" href="#" id="delete-' + data.message.id +'" onclick="delete_msg_btn(' +data.message.id + ')" data-action="' + (baseUrl+ "/message/" + data.message.id) +'">Delete</a>'+
                     '</div>'+
                 '</div>'+
-                '<p>' + data.message.content +'</p>'+
+                '<p class="message-content">' + msgContent +'</p>'+
             '</div>'+
         '</div>')
     }else{
@@ -49,29 +58,56 @@
                     '<span class="font-weight-bold mb-1 mr-2 text-center">' + username +'</span>'+
                     '<span class="text-muted small mt-2">' + created_at +'</span>'+
                 '</div>'+
-                '<p>' + data.message.content +'</p>'+
+                '<p class="message-content">' + msgContent +'</p>'+
             '</div>'+
         '</div>')
     }
   });
 var content
+var files
 var url
 $('.content-msg').keyup(function(){
     content = this.value
 })
-function submitMessageSender(){
+
+$('#attach-file').change(function(e){
+    if(e.target.files.length > 0){
+        $('.attach-file-icon').css('color', 'red')
+    }
+    files = e.target.files
+})
+
+$("#sendMessageForm").submit(function(e) {
+    e.preventDefault();
     url = $('.form-msg').data('action')
+    var formData = new FormData();
+    if(content == undefined){
+        content = null
+    }
+    if(files == undefined){
+        files = null
+    }
+    formData.append("content", content);
+    Array.from(files).forEach((file) => {
+        formData.append("attachedFile[]", file);
+    });
     $.ajax({
         method: "POST",
         url: url,
-        data: { content: content },
+        data: formData,
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
+        },
+        contentType: false,
+        processData: false,
     }).done(function( msg ) {
         $('.content-msg').val('')
+        $('#attach-file').val('')
+        $('.attach-file-icon').css('color', 'black')
+        content = null
+        file = null
     });
-}
+});
 
 function edit_msg_btn(id){
     let edited_content = $("#edit-" + id).data('content')
@@ -110,4 +146,15 @@ function submitMessageUpdater(){
         $('.btn-send').removeClass('btn-warning btn-edit')
         location.reload();
     });
+}
+
+function isValidURL(str){
+    let url;
+    
+    try {
+        url = new URL(str);
+    } catch (_) {
+        return false;  
+    }
+    return url.protocol === "http:" || url.protocol === "https:";
 }

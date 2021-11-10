@@ -5,6 +5,7 @@
 /public/plugins
 /public/public
 /public/profile-pictures
+/public/chatrooms-files
 /storage/*.key
 /vendor
 .env
