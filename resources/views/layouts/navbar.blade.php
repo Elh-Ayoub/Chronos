@@ -1,10 +1,10 @@
 <div class="preloader flex-column justify-content-center align-items-center">
-    <img class="animation__shake" src="{{asset('images/logo_transparent.png')}}" alt="AdminLTELogo" height="250" width="250">
+    <img class="animation__shake" src="{{asset('images/logo_transparent2.png')}}" alt="AdminLTELogo" height="250" width="250">
 </div>
 <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
     <div class="container">
         <a href="{{route('dashboard')}}" class="navbar-brand">
-        <img src="{{ asset('images/logo_transparent.png')}}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <img src="{{ asset('images/logo_transparent2.png')}}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
         <span class="brand-text font-weight-light">{{env('APP_NAME')}}</span>
         </a>
         <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
