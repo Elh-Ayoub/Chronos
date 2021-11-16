@@ -28,12 +28,16 @@ This is a web application that helps organize meetings, tasks for the day/month/
     <li><b>NPM</b></li>
 </ul>
 <h2>Hoste API</h2>
-<h3>To host api just follow this steps:</h3>
+<h3>To try the application just follow this steps:</h3>
 <ol>
     <li><b>run: composer update</b></li>
+    <li><b>run: npm install</b></li>
+    <li><b>run: npm update</b></li>
     <li><b>create .env file</b></li>
     <li><b>Generate key with: php artisan key:generate</b></li>
-    <li><b>run: npm update</b></li>
     <li><b>run: npm run dev</b></li>
+    <li><b>run after creating database: php artisan migrate</b></li>
+    <li><b>set mailer settings in .env file</b></li>
     <li><b>serve the project with: php artisan serve</b></li>
+    <li><b>Run laravel scheduler: php artisan schedule:work</b></li>
 </ol>
