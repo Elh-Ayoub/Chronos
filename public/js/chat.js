@@ -1,9 +1,10 @@
   // Enable pusher logging - don't include this in production
   $(".messages-container").animate({ scrollTop: $('.messages-container').prop("scrollHeight")}, 2000);
+  var PUSHER_APP_KEY = 'c3e36fa068d72596a233'
   var getUrl = window.location;
   var baseUrl = getUrl .protocol + "//" + getUrl.host;
   Pusher.logToConsole = true;
-  var pusher = new Pusher('c3e36fa068d72596a233', {
+  var pusher = new Pusher(PUSHER_APP_KEY, {
     cluster: 'eu'
   });
   var channel = pusher.subscribe('chat');
@@ -64,7 +65,7 @@
     }
   });
 var content
-var files
+var files = []
 var url
 $('.content-msg').keyup(function(){
     content = this.value
