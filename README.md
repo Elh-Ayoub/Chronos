@@ -27,7 +27,7 @@ This is a web application that helps organize meetings, tasks for the day/month/
     <li><b>Composer</b></li>
     <li><b>NPM</b></li>
 </ul>
-<h2>Hoste API</h2>
+<h2>Try Application</h2>
 <h3>To try the application just follow this steps:</h3>
 <ol>
     <li><b>run: composer update</b></li>
