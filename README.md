@@ -33,11 +33,12 @@ This is a web application that helps organize meetings, tasks for the day/month/
     <li><b>run: composer update</b></li>
     <li><b>run: npm install</b></li>
     <li><b>run: npm update</b></li>
-    <li><b>create .env file</b></li>
+    <li><b>create .env file depending on .env.example</b></li>
     <li><b>Generate key with: php artisan key:generate</b></li>
     <li><b>run: npm run dev</b></li>
     <li><b>run after creating database: php artisan migrate</b></li>
     <li><b>set mailer settings in .env file</b></li>
+    <li><b>set pusher settings in .env file by creating account in (https://pusher.com/) and past PUSHER_APP_KEY in Public/js/chat.js</b></li>
     <li><b>serve the project with: php artisan serve</b></li>
     <li><b>Run laravel scheduler: php artisan schedule:work</b></li>
 </ol>
