@@ -14,6 +14,14 @@
 ## About Project
 
 This is a web application that helps organize meetings, tasks for the day/month/year, and events.
+With :
+<ul>
+    <li>a possibility to invite friends to an event via email.</li>
+    <li>a possibility to share calendar and invite others.</li>
+    <li>several users can create/update/delete events on the same calendar (considering rights of each user).</li>
+    <li>email notifications (10 minutes befor and at the time of events).</li>
+    <li>a simple chat for shared events and tasks.</li>  
+</ul>
 <h2>Technologies</h2>
 <ul>
     <li><b>Backend: </b> PHP (Laravel), MySQL. </li>
@@ -27,8 +35,8 @@ This is a web application that helps organize meetings, tasks for the day/month/
     <li><b>Composer</b></li>
     <li><b>NPM</b></li>
 </ul>
-<h2>Try Application</h2>
-<h3>To try the application just follow this steps:</h3>
+<h2>Serve the Application</h2>
+<h3>To try the application clone the repository and follow this steps:</h3>
 <ol>
     <li><b>run: composer update</b></li>
     <li><b>run: npm install</b></li>
